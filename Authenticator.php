@@ -13,9 +13,6 @@ class Authenticator
     }
 
     function login($username, $password) {
-        echo "username: " . $username;
-        echo "\n";
-        echo "password: " . $password;
         return new LoginAttempt();
     } 
 }
