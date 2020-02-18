@@ -2,8 +2,8 @@
 
 use PHPUnit\Framework\TestCase;
 
-include __DIR__ . '/../Authenticator.php';
-include __DIR__ . '/../LoginAttempt.php';
+include_once __DIR__ . '/../Authenticator.php';
+include_once __DIR__ . '/../LoginAttempt.php';
 
 class AuthenticatorTest extends TestCase
 {

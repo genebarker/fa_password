@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 
-include __DIR__ . '/../Datastore.php';
+include_once __DIR__ . '/../Datastore.php';
 
 class DatastoreTest extends TestCase
 {
@@ -21,7 +21,7 @@ class DatastoreTest extends TestCase
             'closeConnection',
             'getVersion',
         );
-        
+
         $reflection = new \ReflectionClass('Datastore');
         foreach ($method as $method_name) {
             $this->assertTrue(

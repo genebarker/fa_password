@@ -2,9 +2,9 @@
 
 interface Datastore
 {
-    public function openConnection($db_username, $db_password, $db_name);
+    public function openConnection($host, $username, $password, $db_name);
     public function getConnection();
-    public function setConnection($connection);
+    public function setConnection($conn);
     public function closeConnection();
     public function getVersion();
 }
