@@ -1,8 +1,8 @@
 <?php
 
+namespace madman\Password;
+
 class LoginAttempt
 {
-    public $has_failed = TRUE;
+    public $has_failed = true;
 }
-
-?>

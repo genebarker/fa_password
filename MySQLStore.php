@@ -1,21 +1,29 @@
 <?php
 
+namespace madman\Password;
+
 class MySQLStore implements Datastore
 {
-    function openConnection($host, $username, $password, $db_name) {
+    public function openConnection($host, $username, $password, $db_name)
+    {
+        $link = mysql_connect($host, $username, $password);
+        mysql_select_db($db_name);
+        return $link;
     }
 
-    function getConnection() {
+    public function getConnection()
+    {
     }
 
-    function setConnection($conn) {
+    public function setConnection($conn)
+    {
     }
 
-    function closeConnection() {
+    public function closeConnection()
+    {
     }
 
-    function getVersion() {
+    public function getVersion()
+    {
     }
 }
-
-?>

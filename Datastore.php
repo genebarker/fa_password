@@ -1,5 +1,7 @@
 <?php
 
+namespace madman\Password;
+
 interface Datastore
 {
     public function openConnection($host, $username, $password, $db_name);
@@ -8,5 +10,3 @@ interface Datastore
     public function closeConnection();
     public function getVersion();
 }
-
-?>

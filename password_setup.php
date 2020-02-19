@@ -1,5 +1,5 @@
 <?php
 
-echo 'Here I am!';
+namespace madman\Password;
 
-?>
+echo 'Here I am!';

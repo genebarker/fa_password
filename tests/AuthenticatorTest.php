@@ -1,9 +1,11 @@
 <?php
 
+namespace madman\Password;
+
 use PHPUnit\Framework\TestCase;
 
-include_once __DIR__ . '/../Authenticator.php';
-include_once __DIR__ . '/../LoginAttempt.php';
+require_once __DIR__ . '/../Authenticator.php';
+require_once __DIR__ . '/../LoginAttempt.php';
 
 class AuthenticatorTest extends TestCase
 {
@@ -22,7 +24,7 @@ class AuthenticatorTest extends TestCase
     {
     }
 
-    function testUnknownUserFails()
+    public function testUnknownUserFails()
     {
         $loginAttempt = $this->authenticator->login(
             'mrunknown',
@@ -31,5 +33,3 @@ class AuthenticatorTest extends TestCase
         $this->assertTrue($loginAttempt->has_failed);
     }
 }
-
-?>
