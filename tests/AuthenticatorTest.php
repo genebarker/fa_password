@@ -4,9 +4,6 @@ namespace madman\Password;
 
 use PHPUnit\Framework\TestCase;
 
-require_once __DIR__ . '/../Authenticator.php';
-require_once __DIR__ . '/../LoginAttempt.php';
-
 class AuthenticatorTest extends TestCase
 {
     protected $authenticator;

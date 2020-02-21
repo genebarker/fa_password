@@ -4,8 +4,6 @@ namespace madman\Password;
 
 use PHPUnit\Framework\TestCase;
 
-require_once __DIR__ . '/../Datastore.php';
-
 class DatastoreTest extends TestCase
 {
     public function testIsInterface()
