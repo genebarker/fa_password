@@ -71,4 +71,11 @@ class MySQLStoreTest extends TestCase
         $store->setConnection($link);
         $this->assertEquals($link, $store->getConnection());
     }
+
+    public function testGetVersionReturnsDBVersion()
+    {
+        $store = $this->getDatastore();
+        $version = $store->getVersion();
+        $this->assertRegExp('/MySQL \d+\.\d+.*/', $version);
+    }
 }
