@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../Authenticator.php';
-require_once __DIR__ . '/../Datastore.php';
-require_once __DIR__ . '/../LoginAttempt.php';
-require_once __DIR__ . '/../MySQLStore.php';
+require_once __DIR__ . '/../src/Authenticator.php';
+require_once __DIR__ . '/../src/Datastore.php';
+require_once __DIR__ . '/../src/LoginAttempt.php';
+require_once __DIR__ . '/../src/MySQLStore.php';
