@@ -8,7 +8,7 @@ class MySQLStoreTest extends TestCase
 {
     protected function setUp()
     {
-        $this->db_config = require("config_db.php");
+        $this->db_config = require('config_db.php');
     }
 
     public function testImplementsDatastore()
@@ -74,5 +74,25 @@ class MySQLStoreTest extends TestCase
         $store = $this->getDatastore();
         $version = $store->getVersion();
         $this->assertRegExp('/MySQL \d+\.\d+.*/', $version);
+    }
+
+    public function testBuildSchemaCreatesTables()
+    {
+        $store = $this->getDatastore();
+        $store->buildDatabaseSchema();
+
+        $conn = $store->conn;
+        $sql = "SELECT count(*)
+            FROM information_schema.tables
+            WHERE table_schema = schema()
+                AND table_name IN ('0_pwe_user');
+        ";
+        $result = mysql_query($sql, $conn);
+        $row = mysql_fetch_row($result);
+        $this->assertEquals(
+            1,
+            $row[0],
+            'database missing expected tables'
+        );
     }
 }

@@ -20,6 +20,7 @@ class DatastoreTest extends TestCase
             'setConnection',
             'closeConnection',
             'getVersion',
+            'buildDatabaseSchema',
         );
 
         $reflection = new \ReflectionClass('madman\Password\Datastore');

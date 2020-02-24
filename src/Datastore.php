@@ -9,4 +9,5 @@ interface Datastore
     public function setConnection($conn);
     public function closeConnection();
     public function getVersion();
+    public function buildDatabaseSchema();
 }
