@@ -3,6 +3,7 @@
 namespace madman\Password;
 
 use Exception;
+use madman\Password\User;
 
 class MySQLStore implements Datastore
 {
@@ -76,5 +77,6 @@ class MySQLStore implements Datastore
 
     public function getUserByUsername($username)
     {
+        return new User();
     }
 }

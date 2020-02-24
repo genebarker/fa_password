@@ -95,4 +95,11 @@ class MySQLStoreTest extends TestCase
             'database missing expected tables'
         );
     }
+
+    public function testGetUserReturnsUser()
+    {
+        $store = $this->getDatastore();
+        $user = $store->getUserByUsername('fmulder');
+        $this->assertTrue($user instanceof User);
+    }
 }
