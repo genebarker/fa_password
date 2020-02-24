@@ -29,4 +29,13 @@ class AuthenticatorTest extends TestCase
         );
         $this->assertTrue($loginAttempt->has_failed);
     }
+
+    // public function testGoodUserSucceeds()
+    // {
+    //     $loginAttempt = $this->authenticator->login(
+    //         'fmulder',
+    //         'scully'
+    //     );
+    //     $this->assertFalse($loginAttempt->has_failed);
+    // }
 }

@@ -73,4 +73,8 @@ class MySQLStore implements Datastore
         fclose($handle);
         return $result;
     }
+
+    public function getUserByUsername($username)
+    {
+    }
 }
