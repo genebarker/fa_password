@@ -121,4 +121,11 @@ class MySQLStoreTest extends TestCase
             $user->pw_hash
         );
     }
+
+    public function testGetUserThrowsOnUnknown()
+    {
+        $this->expectExceptionCode(Datastore::UNKNOWN_USERNAME);
+        $this->expectExceptionMessage('Username (UNKNOWN) does not exist.');
+        self::$store->getUserByUsername('UNKNOWN');
+    }
 }

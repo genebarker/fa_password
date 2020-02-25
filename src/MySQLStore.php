@@ -84,6 +84,12 @@ class MySQLStore implements Datastore
         ";
         $query = sprintf($sql, mysql_real_escape_string($username));
         $result = mysql_query($query, $this->conn);
+        if (mysql_num_rows($result) == 0) {
+            throw new Exception(
+                "Username ($username) does not exist.",
+                self::UNKNOWN_USERNAME
+            );
+        }
         $row = mysql_fetch_row($result);
 
         $user = new User($row[0], $row[1]);
