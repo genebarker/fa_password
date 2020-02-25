@@ -1,10 +1,10 @@
--- to simulate tables created at install time by FA v2.3.x
-DROP TABLE IF EXISTS 0_users;
-CREATE TABLE 0_users (
+-- create slim version of referenced tables in FA v2.3.x
+CREATE TABLE IF NOT EXISTS 0_users (
     id smallint PRIMARY KEY,
     user_id varchar(60),
     password varchar(100)
 );
+DELETE FROM 0_users;
 
 INSERT INTO 0_users (
     id, user_id, password

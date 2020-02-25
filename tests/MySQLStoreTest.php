@@ -6,11 +6,31 @@ use PHPUnit\Framework\TestCase;
 
 class MySQLStoreTest extends TestCase
 {
+    private static $db_config;
+    private static $store;
+
+    public static function setUpBeforeClass()
+    {
+        self::$db_config = require('config_db.php');
+        self::$store = self::getDatastore();
+        self::$store->buildDatabaseSchema();
+    }
+
+    private static function getDatastore()
+    {
+        $store = new MySQLStore();
+        $store->openConnection(
+            self::$db_config['host'],
+            self::$db_config['username'],
+            self::$db_config['password'],
+            self::$db_config['db_name']
+        );
+        return $store;
+    }
+
     protected function setUp()
     {
-        $this->db_config = require('config_db.php');
-        $store = $this->getDatastore();
-        $store->executeSQLFromFile('mysql_load_test_data.sql');
+        self::$store->executeSQLFromFile('mysql_load_test_data.sql');
     }
 
     public function testImplementsDatastore()
@@ -21,34 +41,22 @@ class MySQLStoreTest extends TestCase
 
     public function testOpenConnectionOpens()
     {
-        $store = $this->getDatastore();
-        $conn = $store->conn;
+        $conn = self::$store->conn;
 
         $sql = 'SELECT DATABASE();';
         $result = mysql_query($sql, $conn);
         $row = mysql_fetch_row($result);
         $this->assertEquals(
-            $this->db_config['db_name'],
+            self::$db_config['db_name'],
             $row[0]
         );
     }
 
-    private function getDatastore()
-    {
-        $store = new MySQLStore();
-        $store->openConnection(
-            $this->db_config['host'],
-            $this->db_config['username'],
-            $this->db_config['password'],
-            $this->db_config['db_name']
-        );
-        return $store;
-    }
-
     public function testCloseConnectionCloses()
     {
-        $store = $this->getDatastore();
-        $conn = $store->conn;
+        $conn = $this->getPrivateLinkToDatabase();
+        $store = new MySQLStore();
+        $store->setConnection($conn);
         $store->closeConnection();
 
         $this->assertFalse(
@@ -57,37 +65,41 @@ class MySQLStoreTest extends TestCase
         );
     }
 
+    private function getPrivateLinkToDatabase()
+    {
+        $create_new_link = true;
+        $link = mysql_connect(
+            self::$db_config['host'],
+            self::$db_config['username'],
+            self::$db_config['password'],
+            $create_new_link
+        );
+        return $link;
+    }
+
     public function testSetConnectionSets()
     {
-        $link = mysql_connect(
-            $this->db_config['host'],
-            $this->db_config['username'],
-            $this->db_config['password'],
-            $this->db_config['db_name']
-        );
-
+        $conn = $this->getPrivateLinkToDatabase();
         $store = new MySQLStore();
-        $store->setConnection($link);
-        $this->assertEquals($link, $store->getConnection());
+        $store->setConnection($conn);
+        $this->assertEquals($conn, $store->getConnection());
     }
 
     public function testGetVersionReturnsDBVersion()
     {
-        $store = $this->getDatastore();
-        $version = $store->getVersion();
+        $version = self::$store->getVersion();
         $this->assertRegExp('/MySQL \d+\.\d+.*/', $version);
     }
 
     public function testBuildSchemaCreatesTables()
     {
-        $store = $this->getDatastore();
-        $store->buildDatabaseSchema();
+        self::$store->buildDatabaseSchema();
 
-        $conn = $store->conn;
+        $conn = self::$store->conn;
         $sql = "SELECT count(*)
-            FROM information_schema.tables
-            WHERE table_schema = schema()
-                AND table_name IN ('0_pwe_user');
+                FROM information_schema.tables
+                WHERE table_schema = schema()
+                    AND table_name IN ('0_pwe_user');
         ";
         $result = mysql_query($sql, $conn);
         $row = mysql_fetch_row($result);
@@ -100,10 +112,10 @@ class MySQLStoreTest extends TestCase
 
     public function testGetUserReturnsUser()
     {
-        $store = $this->getDatastore();
-        $user = $store->getUserByUsername('fmulder');
+        $user = self::$store->getUserByUsername('fmulder');
         $this->assertTrue($user instanceof User);
         $this->assertEquals(101, $user->oid);
+        $this->assertEquals('fmulder', $user->username);
         $this->assertEquals(
             '$2y$10$5BEkSCYW3k//CaCIejTJNu7uHiGcyFHF9N9oDHCls7/qFSugv5GZu',
             $user->pw_hash
