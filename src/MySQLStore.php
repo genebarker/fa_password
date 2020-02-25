@@ -77,6 +77,17 @@ class MySQLStore implements Datastore
 
     public function getUserByUsername($username)
     {
-        return new User();
+        $sql = "SELECT u.id, u.user_id, u2.pw_hash
+                FROM 0_users u, 0_pwe_user u2
+                WHERE u.user_id = '%s'
+                    AND u2.oid = u.id
+        ";
+        $query = sprintf($sql, mysql_real_escape_string($username));
+        $result = mysql_query($query, $this->conn);
+        $row = mysql_fetch_row($result);
+
+        $user = new User($row[0], $row[1]);
+        $user->pw_hash = $row[2];
+        return $user;
     }
 }

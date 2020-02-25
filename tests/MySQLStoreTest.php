@@ -9,6 +9,8 @@ class MySQLStoreTest extends TestCase
     protected function setUp()
     {
         $this->db_config = require('config_db.php');
+        $store = $this->getDatastore();
+        $store->executeSQLFromFile('mysql_load_test_data.sql');
     }
 
     public function testImplementsDatastore()
@@ -101,5 +103,10 @@ class MySQLStoreTest extends TestCase
         $store = $this->getDatastore();
         $user = $store->getUserByUsername('fmulder');
         $this->assertTrue($user instanceof User);
+        $this->assertEquals(101, $user->oid);
+        $this->assertEquals(
+            '$2y$10$5BEkSCYW3k//CaCIejTJNu7uHiGcyFHF9N9oDHCls7/qFSugv5GZu',
+            $user->pw_hash
+        );
     }
 }
