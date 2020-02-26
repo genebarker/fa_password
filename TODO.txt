@@ -1,0 +1,8 @@
+# Things I plan to do on next visit
+
+- improve comment in build schema
+- move phpcs:ignore for class constant warning to PHPCS.xml
+  (get them out of the code!)
+- update 0_users (for success)
+- update 0_pwe_user (for success)
+
