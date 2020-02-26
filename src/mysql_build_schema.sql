@@ -1,4 +1,4 @@
--- create tables
+-- create new tables for the extension
 DROP TABLE IF EXISTS 0_pwe_user;
 CREATE TABLE 0_pwe_user (
     oid integer PRIMARY KEY,
