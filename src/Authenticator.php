@@ -13,6 +13,17 @@ class Authenticator
 
     public function login($username, $password)
     {
-        return new LoginAttempt();
+        try {
+            $user = $this->store->getUserByUsername($username);
+        } catch (\Exception $e) {
+            return new LoginAttempt();
+        }
+        if (!password_verify($password, $user->pw_hash)) {
+            return new LoginAttempt();
+        }
+
+        $has_failed = false;
+        $message = "Welcome back $username.";
+        return new LoginAttempt($has_failed);
     }
 }
