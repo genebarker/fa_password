@@ -17,9 +17,11 @@ VALUE (
 );
 
 INSERT INTO 0_pwe_user (
-    oid, pw_hash
+    oid, pw_hash, ongoing_pw_fail_count, last_pw_fail_time
 )
 VALUE (
     101,
-    '$2y$10$5BEkSCYW3k//CaCIejTJNu7uHiGcyFHF9N9oDHCls7/qFSugv5GZu'
+    '$2y$10$5BEkSCYW3k//CaCIejTJNu7uHiGcyFHF9N9oDHCls7/qFSugv5GZu',
+    1,
+    '2019-12-25 12:15:00'
 );

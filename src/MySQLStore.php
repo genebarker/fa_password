@@ -7,6 +7,8 @@ use madman\Password\User;
 
 class MySQLStore implements Datastore
 {
+    const MYSQL_TIMESTAMP_FORMAT = 'Y-m-d H:i:s';
+
     public $conn = null;
 
     public function openConnection($host, $username, $password, $db_name)
@@ -77,7 +79,8 @@ class MySQLStore implements Datastore
 
     public function getUserByUsername($username)
     {
-        $sql = "SELECT u.id, u.user_id, u2.pw_hash
+        $sql = "SELECT u.id, u.user_id, u2.pw_hash,
+                    u2.ongoing_pw_fail_count, u2.last_pw_fail_time
                 FROM 0_users u, 0_pwe_user u2
                 WHERE u.user_id = '%s'
                     AND u2.oid = u.id
@@ -94,6 +97,19 @@ class MySQLStore implements Datastore
 
         $user = new User($row[0], $row[1]);
         $user->pw_hash = $row[2];
+        $user->ongoing_pw_fail_count = $row[3];
+        $user->last_pw_fail_time = (
+            $row[4] == null ? null : self::convertToPHPDate($row[4])
+        );
         return $user;
+    }
+
+    public static function convertToPHPDate($timestamp_string)
+    {
+        $php_date = date_create_from_format(
+            self::MYSQL_TIMESTAMP_FORMAT,
+            $timestamp_string
+        );
+        return $php_date;
     }
 }

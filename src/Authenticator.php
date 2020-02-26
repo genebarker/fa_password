@@ -22,6 +22,11 @@ class Authenticator
             return new LoginAttempt();
         }
 
+        $user->ongoing_pw_fail_count = 0;
+        $sql = "UPDATE 0_pwe_user
+                SET ongoing_pw_fail_count = 0
+                WHERE oid = $user->oid";
+        mysql_query($sql, $this->store->conn);
         $has_failed = false;
         $message = "Welcome back $username.";
         return new LoginAttempt($has_failed);

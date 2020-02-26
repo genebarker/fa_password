@@ -49,10 +49,18 @@ class AuthenticatorTest extends TestCase
 
     public function testGoodUserSucceeds()
     {
-        $loginAttempt = self::$authenticator->login(
-            'fmulder',
-            'scully'
-        );
+        $loginAttempt = self::$authenticator->login('fmulder', 'scully');
         $this->assertFalse($loginAttempt->has_failed);
+    }
+
+    public function testGoodUserResetsPasswordFailCount()
+    {
+        $loginAttempt = self::$authenticator->login('fmulder', 'scully');
+        $user = self::$store->getUserByUsername('fmulder');
+        $this->assertEquals(0, $user->ongoing_pw_fail_count);
+        $this->assertEquals(
+            date_create_from_format('Y-m-d H:i:s', '2019-12-25 12:15:00'),
+            $user->last_pw_fail_time
+        );
     }
 }
