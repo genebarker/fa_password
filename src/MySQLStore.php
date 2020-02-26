@@ -33,7 +33,7 @@ class MySQLStore implements Datastore
 
     public function getVersion()
     {
-        $result = mysql_query('SELECT version();', $this->conn);
+        $result = mysql_query("SELECT version()", $this->conn);
         $row = mysql_fetch_row($result);
         return 'MySQL ' . $row[0];
     }

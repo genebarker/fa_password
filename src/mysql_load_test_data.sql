@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS 0_users (
 );
 DELETE FROM 0_users;
 
+-- insert default data expected by tests
 INSERT INTO 0_users (
     id, user_id, password
 )
