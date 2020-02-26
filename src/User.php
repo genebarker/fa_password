@@ -4,12 +4,15 @@ namespace madman\Password;
 
 class User
 {
-    public $ongoing_pw_fail_count = 0;
-    public $last_pw_fail_time = null;
-
     public function __construct($oid, $username)
     {
         $this->oid = $oid;
         $this->username = $username;
+
+        $this->pw_hash = null;
+        $this->needs_pw_change = false;
+        $this->is_locked = false;
+        $this->ongoing_pw_fail_count = 0;
+        $this->last_pw_fail_time = null;
     }
 }
