@@ -3,6 +3,7 @@
     <description>PEAR standard sans file / doc comments.</description>
     <rule ref="PSR12">
         <exclude name="PEAR.Commenting.FileComment.Missing"/>
+        <exclude name="PSR12.Properties.ConstantVisibility.NotFound"/>
     </rule>
 </ruleset>
 
