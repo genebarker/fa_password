@@ -6,15 +6,32 @@ use PHPUnit\Framework\TestCase;
 
 class AuthenticatorTest extends TestCase
 {
-    protected $authenticator;
+    private static $store;
+    private static $authenticator;
+
+    public static function setUpBeforeClass()
+    {
+        $db_config = require('config_db.php');
+        $store = new MySQLStore();
+        $store->openConnection(
+            $db_config['host'],
+            $db_config['username'],
+            $db_config['password'],
+            $db_config['db_name']
+        );
+        $store->buildDatabaseSchema();
+        self::$store = $store;
+        self::$authenticator = new Authenticator($store);
+    }
+
+    public static function tearDownAfterClass()
+    {
+        self::$store->closeConnection();
+    }
 
     protected function setUp()
     {
-        $this->authenticator = new Authenticator(
-            'fa23test',
-            'mrtest',
-            'goingWild!'
-        );
+        self::$store->executeSQLFromFile('mysql_load_test_data.sql');
     }
 
     protected function tearDown()
@@ -23,7 +40,7 @@ class AuthenticatorTest extends TestCase
 
     public function testUnknownUserFails()
     {
-        $loginAttempt = $this->authenticator->login(
+        $loginAttempt = self::$authenticator->login(
             'mrunknown',
             'some_password'
         );
