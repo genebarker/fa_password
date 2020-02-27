@@ -63,4 +63,31 @@ class AuthenticatorTest extends TestCase
             $user->last_pw_fail_time
         );
     }
+
+    public function testGoodUserBadPassFails()
+    {
+        $loginAttempt = self::$authenticator->login('fmulder', 'wrong_pw');
+        $this->assertEquals(true, $loginAttempt->has_failed);
+        $this->assertEquals(
+            'Login attempt failed.',
+            $loginAttempt->message
+        );
+    }
+
+    public function testGoodUserBadPassUpdatesFailFields()
+    {
+        $user_before = self::$store->getUserByUsername('fmulder');
+        $login_time = date_create('now');
+        $loginAttempt = self::$authenticator->login('fmulder', 'wrong_pw');
+        $user_after = self::$store->getUserByUsername('fmulder');
+
+        $this->assertEquals(
+            $user_before->ongoing_pw_fail_count++,
+            $user_after->ongoing_pw_fail_count
+        );
+        $this->assertTrue(
+            $user_after->last_pw_fail_time
+            >= $user_before->last_pw_fail_time
+        );
+    }
 }
