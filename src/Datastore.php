@@ -13,4 +13,5 @@ interface Datastore
     public function getVersion();
     public function buildDatabaseSchema();
     public function getUserByUsername($username);
+    public function updateUser($user);
 }

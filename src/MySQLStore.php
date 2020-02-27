@@ -115,4 +115,8 @@ class MySQLStore implements Datastore
         );
         return $php_date;
     }
+
+    public function updateUser($user)
+    {
+    }
 }
