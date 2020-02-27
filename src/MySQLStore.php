@@ -118,5 +118,28 @@ class MySQLStore implements Datastore
 
     public function updateUser($user)
     {
+        $sql = "UPDATE 0_pwe_user
+                SET pw_hash = '%s',
+                    needs_pw_change = %b,
+                    is_locked = %b,
+                    ongoing_pw_fail_count = %d,
+                    last_pw_fail_time = '%s'
+                WHERE oid = %d
+        ";
+        $query = sprintf(
+            $sql,
+            mysql_real_escape_string($user->pw_hash),
+            $user->needs_pw_change,
+            $user->is_locked,
+            $user->ongoing_pw_fail_count,
+            self::convertToSQLTimestamp($user->last_pw_fail_time),
+            $user->oid
+        );
+        $result = mysql_query($query, $this->conn);
+    }
+
+    public static function convertToSQLTimestamp($php_date)
+    {
+        return date_format($php_date, self::MYSQL_TIMESTAMP_FORMAT);
     }
 }

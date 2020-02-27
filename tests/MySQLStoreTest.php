@@ -133,4 +133,20 @@ class MySQLStoreTest extends TestCase
         $this->expectExceptionMessage('Username (UNKNOWN) does not exist.');
         self::$store->getUserByUsername('UNKNOWN');
     }
+
+    public function testUpdateUserUpdatesUser()
+    {
+        $user = self::$store->getUserByUsername('fmulder');
+        $user->pw_hash = 'different';
+        $user->needs_pw_change = true;
+        $user->is_locked = true;
+        $user->ongoing_pw_fail_count = 16;
+        $update_time = date_create('now');
+        $user->last_pw_fail_time = $update_time;
+
+        self::$store->updateUser($user);
+
+        $user_after = self::$store->getUserByUsername('fmulder');
+        $this->assertEquals($user, $user_after);
+    }
 }
