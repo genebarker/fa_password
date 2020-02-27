@@ -49,6 +49,18 @@ class MySQLStore implements Datastore
         }
     }
 
+    public function beginTransaction()
+    {
+    }
+
+    public function commitTransaction()
+    {
+    }
+
+    public function rollbackTransaction()
+    {
+    }
+
     public function executeSQLFromFile($filename)
     {
         $filepath = __DIR__ . '/' . $filename;

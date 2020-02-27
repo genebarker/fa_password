@@ -21,6 +21,9 @@ class DatastoreTest extends TestCase
             'closeConnection',
             'getVersion',
             'buildDatabaseSchema',
+            'beginTransaction',
+            'commitTransaction',
+            'rollbackTransaction',
             'getUserByUsername',
             'updateUser',
         );
