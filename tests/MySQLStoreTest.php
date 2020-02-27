@@ -112,14 +112,19 @@ class MySQLStoreTest extends TestCase
 
     public function testGetUserReturnsUser()
     {
-        $user = self::$store->getUserByUsername('fmulder');
+        $user = self::$store->getUserByUsername('dscully');
         $this->assertTrue($user instanceof User);
-        $this->assertEquals(101, $user->oid);
-        $this->assertEquals('fmulder', $user->username);
+        $this->assertEquals(102, $user->oid);
+        $this->assertEquals('dscully', $user->username);
         $this->assertEquals(
-            '$2y$10$5BEkSCYW3k//CaCIejTJNu7uHiGcyFHF9N9oDHCls7/qFSugv5GZu',
+            '$2y$10$vra/wVFQUZHlOaVYIqPew.SbYCmTJDdKmOXHPdq038d6z08xSe.4G',
             $user->pw_hash
         );
+        $this->assertEquals(true, $user->needs_pw_change);
+        $this->assertEquals(true, $user->is_locked);
+        $this->assertEquals(99, $user->ongoing_pw_fail_count);
+        $nye_2020 = self::$store->convertToPHPDate('2020-01-01 00:00:00');
+        $this->assertEquals($nye_2020, $user->last_pw_fail_time);
     }
 
     public function testGetUserThrowsOnUnknown()

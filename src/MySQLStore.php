@@ -79,8 +79,9 @@ class MySQLStore implements Datastore
 
     public function getUserByUsername($username)
     {
-        $sql = "SELECT u.id, u.user_id, u2.pw_hash,
-                    u2.ongoing_pw_fail_count, u2.last_pw_fail_time
+        $sql = "SELECT u.id, u.user_id, u2.pw_hash, u2.needs_pw_change,
+                    u2.is_locked, u2.ongoing_pw_fail_count,
+                    u2.last_pw_fail_time
                 FROM 0_users u, 0_pwe_user u2
                 WHERE u.user_id = '%s'
                     AND u2.oid = u.id
@@ -97,9 +98,11 @@ class MySQLStore implements Datastore
 
         $user = new User($row[0], $row[1]);
         $user->pw_hash = $row[2];
-        $user->ongoing_pw_fail_count = $row[3];
+        $user->needs_pw_change = $row[3];
+        $user->is_locked = $row[4];
+        $user->ongoing_pw_fail_count = $row[5];
         $user->last_pw_fail_time = (
-            $row[4] == null ? null : self::convertToPHPDate($row[4])
+            $row[6] == null ? null : self::convertToPHPDate($row[6])
         );
         return $user;
     }
