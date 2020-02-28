@@ -82,12 +82,9 @@ class AuthenticatorTest extends TestCase
         $user_after = self::$store->getUserByUsername('fmulder');
 
         $this->assertEquals(
-            $user_before->ongoing_pw_fail_count++,
+            $user_before->ongoing_pw_fail_count + 1,
             $user_after->ongoing_pw_fail_count
         );
-        $this->assertTrue(
-            $user_after->last_pw_fail_time
-            >= $user_before->last_pw_fail_time
-        );
+        $this->assertTrue($user_after->last_pw_fail_time >= $login_time);
     }
 }

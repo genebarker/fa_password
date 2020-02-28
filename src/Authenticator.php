@@ -19,6 +19,9 @@ class Authenticator
             return new LoginAttempt();
         }
         if (!password_verify($password, $user->pw_hash)) {
+            $user->ongoing_pw_fail_count++;
+            $user->last_pw_fail_time = date_create('now');
+            $this->store->updateUser($user);
             return new LoginAttempt();
         }
 
