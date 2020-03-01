@@ -91,6 +91,29 @@ class MySQLStoreTest extends TestCase
         $this->assertRegExp('/MySQL \d+\.\d+.*/', $version);
     }
 
+    public function testOneRowQueryReturnsResult()
+    {
+        $sql = 'SELECT 1+1';
+        $fail_message = 'Can not add.';
+        $row = self::$store->processOneRowQuery($sql, $fail_message);
+        $this->assertEquals('2', $row[0]);
+    }
+
+    public function testOneRowQueryThrowsOnError()
+    {
+        $sql = 'SELECT unknown_column';
+        $fail_message = 'Did bad select.';
+
+        $exception_msg = (
+            "Did bad select. Cause: Unknown column 'unknown_column' in " .
+            "'field list'. SQL: SELECT unknown_column"
+        );
+        $this->expectExceptionMessage($exception_msg);
+        $this->expectExceptionCode(Datastore::QUERY_ERROR);
+
+        $row = self::$store->processOneRowQuery($sql, $fail_message);
+    }
+
     public function testBuildSchemaCreatesTables()
     {
         self::$store->buildDatabaseSchema();

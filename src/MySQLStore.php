@@ -35,9 +35,26 @@ class MySQLStore implements Datastore
 
     public function getVersion()
     {
-        $result = mysql_query("SELECT version()", $this->conn);
-        $row = mysql_fetch_row($result);
+        $sql = "SELECT version()";
+        $fail_message = "Could not get version from MySQL.";
+        $row = $this->processOneRowQuery($sql, $fail_message);
         return 'MySQL ' . $row[0];
+    }
+
+    public function processOneRowQuery($sql, $fail_message)
+    {
+        $result = mysql_query($sql, $this->conn);
+        if (!$result) {
+            $this->throwDatabaseException($sql, $fail_message);
+        }
+        return mysql_fetch_row($result);
+    }
+
+    public function throwDatabaseException($sql, $error_message)
+    {
+        $cause = mysql_error($this->conn) ?: 'Unknown';
+        $message = "$error_message Cause: $cause. SQL: $sql";
+        throw new Exception($message, self::QUERY_ERROR);
     }
 
     public function buildDatabaseSchema()
