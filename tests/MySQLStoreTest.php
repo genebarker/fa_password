@@ -111,7 +111,19 @@ class MySQLStoreTest extends TestCase
         $this->expectExceptionMessage($exception_msg);
         $this->expectExceptionCode(Datastore::QUERY_ERROR);
 
-        $row = self::$store->processOneRowQuery($sql, $fail_message);
+        self::$store->processOneRowQuery($sql, $fail_message);
+    }
+
+    public function testOneRowQueryThrowTrimsTheSQL()
+    {
+        $sql = "SELECT *
+                FROM unknown_table";
+        $fail_message = 'Failed.';
+        $this->expectExceptionMessageRegExp(
+            '/^Failed\..*SQL: SELECT \* FROM unknown_table$/'
+        );
+        $this->expectExceptionCode(Datastore::QUERY_ERROR);
+        self::$store->processOneRowQuery($sql, $fail_message);
     }
 
     public function testBuildSchemaCreatesTables()
