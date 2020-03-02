@@ -2,9 +2,13 @@
 
 namespace madman\Password;
 
+use DateInterval;
+
 class Authenticator
 {
     const LOGIN_FAIL_THRESHOLD_COUNT = 3;
+    const LOGIN_FAIL_LOCK_MINUTES = 15;
+
     public $store;
 
     public function __construct($store)
@@ -19,7 +23,7 @@ class Authenticator
         } catch (\Exception $e) {
             return new LoginAttempt();
         }
-        if ($user->is_locked) {
+        if ($user->is_locked && $this->tooSoonToTryAgain($user)) {
             return new LoginAttempt();
         }
         if (!password_verify($password, $user->pw_hash)) {
@@ -40,5 +44,16 @@ class Authenticator
         $has_failed = false;
         $message = "Welcome back $username.";
         return new LoginAttempt($has_failed);
+    }
+
+    public static function tooSoonToTryAgain($user)
+    {
+        $lock_length = new DateInterval(
+            'PT' . Authenticator::LOGIN_FAIL_LOCK_MINUTES . 'M'
+        );
+        $expire_time = date_add($user->last_pw_fail_time, $lock_length);
+        $now = date_create('now');
+
+        return $now < $expire_time;
     }
 }

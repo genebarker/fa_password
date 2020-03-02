@@ -2,6 +2,7 @@
 
 namespace madman\Password;
 
+use DateInterval;
 use PHPUnit\Framework\TestCase;
 
 class AuthenticatorTest extends TestCase
@@ -111,5 +112,19 @@ class AuthenticatorTest extends TestCase
         $this->triggerLockForUser('fmulder');
         $loginAttempt = self::$authenticator->login('fmulder', 'scully');
         $this->assertEquals(true, $loginAttempt->has_failed);
+    }
+
+    public function testLockResetsAfterSetTime()
+    {
+        $this->triggerLockForUser('fmulder');
+        $lock_length = new DateInterval(
+            'PT' . Authenticator::LOGIN_FAIL_LOCK_MINUTES . 'M'
+        );
+        $enough = date_sub(date_create('now'), $lock_length);
+        $user = self::$store->getUserByUsername('fmulder');
+        $user->last_pw_fail_time = $enough;
+        self::$store->updateUser($user);
+        $loginAttempt = self::$authenticator->login('fmulder', 'scully');
+        $this->assertEquals(false, $loginAttempt->has_failed);
     }
 }
