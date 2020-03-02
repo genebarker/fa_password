@@ -90,14 +90,19 @@ class AuthenticatorTest extends TestCase
 
     public function testUserLocksAfterTooManyBadPasswords()
     {
+        $this->triggerLockForUser('fmulder');
+        $user = self::$store->getUserByUsername('fmulder');
+        $this->assertEquals(true, $user->is_locked);
+    }
+
+    public function triggerLockForUser($username)
+    {
         $lock_threshold = Authenticator::LOGIN_FAIL_THRESHOLD_COUNT;
         for ($i = 1; $i <= $lock_threshold; $i++) {
             $loginAttempt = self::$authenticator->login(
-                'fmulder',
+                $username,
                 'the_wrong_password'
             );
         }
-        $user = self::$store->getUserByUsername('fmulder');
-        $this->assertEquals(true, $user->is_locked);
     }
 }
