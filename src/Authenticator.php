@@ -6,14 +6,13 @@ use DateInterval;
 
 class Authenticator
 {
-    const LOGIN_FAIL_THRESHOLD_COUNT = 3;
-    const LOGIN_FAIL_LOCK_MINUTES = 15;
-
     public $store;
+    public $config;
 
     public function __construct($store)
     {
         $this->store = $store;
+        $this->config = $store->getConfig();
     }
 
     public function login($username, $password)
@@ -31,7 +30,7 @@ class Authenticator
             $user->last_pw_fail_time = date_create('now');
             if (
                 $user->ongoing_pw_fail_count
-                > self::LOGIN_FAIL_THRESHOLD_COUNT
+                > $this->config->login_fail_threshold_count
             ) {
                 $user->is_locked = true;
             }
@@ -46,10 +45,10 @@ class Authenticator
         return new LoginAttempt($has_failed);
     }
 
-    public static function tooSoonToTryAgain($user)
+    public function tooSoonToTryAgain($user)
     {
         $lock_length = new DateInterval(
-            'PT' . Authenticator::LOGIN_FAIL_LOCK_MINUTES . 'M'
+            'PT' . $this->config->login_fail_lock_minutes . 'M'
         );
         $expire_time = date_add($user->last_pw_fail_time, $lock_length);
         $now = date_create('now');

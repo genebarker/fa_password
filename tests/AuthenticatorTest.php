@@ -98,7 +98,7 @@ class AuthenticatorTest extends TestCase
 
     public function triggerLockForUser($username)
     {
-        $lock_threshold = Authenticator::LOGIN_FAIL_THRESHOLD_COUNT;
+        $lock_threshold = Config::DEFAULT_LOGIN_FAIL_THRESHOLD_COUNT;
         for ($i = 1; $i <= $lock_threshold; $i++) {
             $loginAttempt = self::$authenticator->login(
                 $username,
@@ -118,7 +118,7 @@ class AuthenticatorTest extends TestCase
     {
         $this->triggerLockForUser('fmulder');
         $lock_length = new DateInterval(
-            'PT' . Authenticator::LOGIN_FAIL_LOCK_MINUTES . 'M'
+            'PT' . Config::DEFAULT_LOGIN_FAIL_LOCK_MINUTES . 'M'
         );
         $enough = date_sub(date_create('now'), $lock_length);
         $user = self::$store->getUserByUsername('fmulder');
