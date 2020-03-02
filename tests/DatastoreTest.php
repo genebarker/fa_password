@@ -21,6 +21,7 @@ class DatastoreTest extends TestCase
             'closeConnection',
             'getVersion',
             'buildDatabaseSchema',
+            'getConfig',
             'getUserByUsername',
             'updateUser',
         );

@@ -102,6 +102,10 @@ class MySQLStore implements Datastore
         return $result;
     }
 
+    public function getConfig()
+    {
+    }
+
     public function getUserByUsername($username)
     {
         $sql = "SELECT u.id, u.user_id, u2.pw_hash, u2.needs_pw_change,
