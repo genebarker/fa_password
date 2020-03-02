@@ -19,6 +19,9 @@ class Authenticator
         } catch (\Exception $e) {
             return new LoginAttempt();
         }
+        if ($user->is_locked) {
+            return new LoginAttempt();
+        }
         if (!password_verify($password, $user->pw_hash)) {
             $user->ongoing_pw_fail_count++;
             $user->last_pw_fail_time = date_create('now');

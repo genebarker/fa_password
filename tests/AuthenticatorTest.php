@@ -105,4 +105,11 @@ class AuthenticatorTest extends TestCase
             );
         }
     }
+
+    public function testLoginFailsWhenUserLocked()
+    {
+        $this->triggerLockForUser('fmulder');
+        $loginAttempt = self::$authenticator->login('fmulder', 'scully');
+        $this->assertEquals(true, $loginAttempt->has_failed);
+    }
 }
