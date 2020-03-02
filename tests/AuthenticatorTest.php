@@ -94,12 +94,21 @@ class AuthenticatorTest extends TestCase
         $this->triggerLockForUser('fmulder');
         $user = self::$store->getUserByUsername('fmulder');
         $this->assertEquals(true, $user->is_locked);
+        $this->assertEquals(
+            self::$authenticator->config->login_fail_threshold_count + 1,
+            $user->ongoing_pw_fail_count
+        );
     }
 
     public function triggerLockForUser($username)
     {
-        $lock_threshold = Config::DEFAULT_LOGIN_FAIL_THRESHOLD_COUNT;
-        for ($i = 1; $i <= $lock_threshold; $i++) {
+        $user = self::$store->getUserByUsername($username);
+        $times_to_fail = (
+            self::$authenticator->config->login_fail_threshold_count
+            + 1
+            - $user->ongoing_pw_fail_count
+        );
+        for ($i = 1; $i <= $times_to_fail; $i++) {
             $loginAttempt = self::$authenticator->login(
                 $username,
                 'the_wrong_password'
@@ -117,12 +126,12 @@ class AuthenticatorTest extends TestCase
     public function testLockResetsAfterSetTime()
     {
         $this->triggerLockForUser('fmulder');
-        $lock_length = new DateInterval(
-            'PT' . Config::DEFAULT_LOGIN_FAIL_LOCK_MINUTES . 'M'
+        $lock_duration = new DateInterval(
+            'PT' . self::$authenticator->config->login_fail_lock_minutes . 'M'
         );
-        $enough = date_sub(date_create('now'), $lock_length);
+        $fail_time = date_sub(date_create('now'), $lock_duration);
         $user = self::$store->getUserByUsername('fmulder');
-        $user->last_pw_fail_time = $enough;
+        $user->last_pw_fail_time = $fail_time;
         self::$store->updateUser($user);
         $loginAttempt = self::$authenticator->login('fmulder', 'scully');
         $this->assertEquals(false, $loginAttempt->has_failed);
