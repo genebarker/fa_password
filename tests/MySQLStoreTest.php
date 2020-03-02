@@ -134,12 +134,12 @@ class MySQLStoreTest extends TestCase
         $sql = "SELECT count(*)
                 FROM information_schema.tables
                 WHERE table_schema = schema()
-                    AND table_name IN ('0_pwe_user');
+                    AND table_name IN ('0_pwe_user', '0_pwe_config');
         ";
         $result = mysql_query($sql, $conn);
         $row = mysql_fetch_row($result);
         $this->assertEquals(
-            1,
+            2,
             $row[0],
             'database missing expected tables'
         );
