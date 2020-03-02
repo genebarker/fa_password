@@ -87,4 +87,17 @@ class AuthenticatorTest extends TestCase
         );
         $this->assertTrue($user_after->last_pw_fail_time >= $login_time);
     }
+
+    public function testUserLocksAfterTooManyBadPasswords()
+    {
+        $lock_threshold = Authenticator::LOGIN_FAIL_THRESHOLD_COUNT;
+        for ($i = 1; $i <= $lock_threshold; $i++) {
+            $loginAttempt = self::$authenticator->login(
+                'fmulder',
+                'the_wrong_password'
+            );
+        }
+        $user = self::$store->getUserByUsername('fmulder');
+        $this->assertEquals(true, $user->is_locked);
+    }
 }
