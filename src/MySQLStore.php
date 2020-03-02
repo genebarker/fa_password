@@ -104,6 +104,18 @@ class MySQLStore implements Datastore
 
     public function getConfig()
     {
+        $config = new Config();
+        $key = [
+            'login_fail_threshold_count',
+            'login_fail_lock_minutes',
+        ];
+        foreach ($key as $okey) {
+            $sql = "SELECT val FROM 0_pwe_config WHERE okey = '$okey'";
+            $fail_message = "Could not config value ($okey).";
+            $row = $this->processOneRowQuery($sql, $fail_message);
+            $config->$okey = $row[0];
+        }
+        return $config;
     }
 
     public function getUserByUsername($username)

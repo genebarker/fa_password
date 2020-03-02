@@ -145,6 +145,20 @@ class MySQLStoreTest extends TestCase
         );
     }
 
+    public function testGetConfigReturnsConfig()
+    {
+        $config = self::$store->getConfig();
+        $this->assertTrue($config instanceof Config);
+        $this->assertEquals(
+            $config::DEFAULT_LOGIN_FAIL_THRESHOLD_COUNT,
+            $config->login_fail_threshold_count
+        );
+        $this->assertEquals(
+            $config::DEFAULT_LOGIN_FAIL_LOCK_MINUTES,
+            $config->login_fail_lock_minutes
+        );
+    }
+
     public function testGetUserReturnsUser()
     {
         $user = self::$store->getUserByUsername('dscully');

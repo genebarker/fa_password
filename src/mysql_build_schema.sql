@@ -4,6 +4,10 @@ CREATE TABLE 0_pwe_config (
     okey varchar(50),
     val text
 );
+INSERT INTO 0_pwe_config (okey, val)
+VALUES
+    ('login_fail_threshold_count', 3),
+    ('LOGIN_FAIL_LOCK_MINUTES', 15);
 
 DROP TABLE IF EXISTS 0_pwe_user;
 CREATE TABLE 0_pwe_user (
