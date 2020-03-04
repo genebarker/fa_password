@@ -43,11 +43,17 @@ class MySQLStore implements Datastore
 
     public function processOneRowQuery($sql, $fail_message)
     {
+        $result = $this->executeQuery($sql, $fail_message);
+        return mysql_fetch_row($result);
+    }
+
+    public function executeQuery($sql, $fail_message)
+    {
         $result = mysql_query($sql, $this->conn);
         if (!$result) {
             $this->throwDatabaseException($sql, $fail_message);
         }
-        return mysql_fetch_row($result);
+        return $result;
     }
 
     public function throwDatabaseException($sql, $error_message)
@@ -67,14 +73,23 @@ class MySQLStore implements Datastore
 
     public function startTransaction()
     {
+        $sql = "START TRANSACTION";
+        $fail_message = "Could not start a MySQL transaction.";
+        $this->executeQuery($sql, $fail_message);
     }
 
     public function commitTransaction()
     {
+        $sql = "COMMIT";
+        $fail_message = "Could not commit a MySQL transaction.";
+        $this->executeQuery($sql, $fail_message);
     }
 
     public function rollbackTransaction()
     {
+        $sql = "ROLLBACK";
+        $fail_message = "Could not rollback a MySQL transaction.";
+        $this->executeQuery($sql, $fail_message);
     }
 
     public function buildDatabaseSchema()

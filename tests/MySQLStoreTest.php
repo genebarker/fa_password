@@ -126,6 +126,45 @@ class MySQLStoreTest extends TestCase
         self::$store->processOneRowQuery($sql, $fail_message);
     }
 
+    public function testCommitTransactionCommits()
+    {
+        self::$store->startTransaction();
+        $this->deleteExtUsers();
+        self::$store->commitTransaction();
+        $user_count = $this->getExtUsersCount();
+        $this->assertEquals(0, $user_count, 'did not commit transaction');
+    }
+
+    private function deleteExtUsers()
+    {
+        $conn = self::$store->conn;
+        $sql = "DELETE FROM 0_pwe_user";
+        mysql_query($sql, $conn);
+    }
+
+    private function getExtUsersCount()
+    {
+        $conn = self::$store->conn;
+        $sql = "SELECT count(*) FROM 0_pwe_user";
+        $result = mysql_query($sql, $conn);
+        $row = mysql_fetch_row($result);
+        return $row[0];
+    }
+
+    public function testRollbackTransactionRollsback()
+    {
+        $before_count = $this->getExtUsersCount();
+        self::$store->startTransaction();
+        $this->deleteExtUsers();
+        self::$store->rollbackTransaction();
+        $after_count = $this->getExtUsersCount();
+        $this->assertEquals(
+            $before_count,
+            $after_count,
+            'did not rollback transaction'
+        );
+    }
+
     public function testBuildSchemaCreatesTables()
     {
         self::$store->buildDatabaseSchema();
