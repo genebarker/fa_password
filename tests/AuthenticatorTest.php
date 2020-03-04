@@ -126,9 +126,8 @@ class AuthenticatorTest extends TestCase
     public function testLockResetsAfterSetTime()
     {
         $this->triggerLockForUser('fmulder');
-        $lock_duration = new DateInterval(
-            'PT' . self::$authenticator->config->login_fail_lock_minutes . 'M'
-        );
+        $minutes = self::$authenticator->config->login_fail_lock_minutes;
+        $lock_duration = new DateInterval("PT{$minutes}M");
         $fail_time = date_sub(date_create('now'), $lock_duration);
         $user = self::$store->getUserByUsername('fmulder');
         $user->last_pw_fail_time = $fail_time;
