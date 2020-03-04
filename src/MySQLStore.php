@@ -65,6 +65,18 @@ class MySQLStore implements Datastore
         return implode(' ', $lines);
     }
 
+    public function startTransaction()
+    {
+    }
+
+    public function commitTransaction()
+    {
+    }
+
+    public function rollbackTransaction()
+    {
+    }
+
     public function buildDatabaseSchema()
     {
         $result = $this->executeSQLFromFile('mysql_build_schema.sql');

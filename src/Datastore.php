@@ -12,6 +12,9 @@ interface Datastore
     public function setConnection($conn);
     public function closeConnection();
     public function getVersion();
+    public function startTransaction();
+    public function commitTransaction();
+    public function rollbackTransaction();
     public function buildDatabaseSchema();
     public function getConfig();
     public function getUserByUsername($username);
