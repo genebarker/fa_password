@@ -137,17 +137,16 @@ class MySQLStoreTest extends TestCase
 
     private function deleteExtUsers()
     {
-        $conn = self::$store->conn;
         $sql = "DELETE FROM 0_pwe_user";
-        mysql_query($sql, $conn);
+        $fail_message = "Could not delete rows.";
+        self::$store->executeQuery($sql, $fail_message);
     }
 
     private function getExtUsersCount()
     {
-        $conn = self::$store->conn;
         $sql = "SELECT count(*) FROM 0_pwe_user";
-        $result = mysql_query($sql, $conn);
-        $row = mysql_fetch_row($result);
+        $fail_message = "Could not get row count.";
+        $row = self::$store->processOneRowQuery($sql, $fail_message);
         return $row[0];
     }
 
@@ -169,14 +168,13 @@ class MySQLStoreTest extends TestCase
     {
         self::$store->buildDatabaseSchema();
 
-        $conn = self::$store->conn;
         $sql = "SELECT count(*)
                 FROM information_schema.tables
                 WHERE table_schema = schema()
                     AND table_name IN ('0_pwe_user', '0_pwe_config');
         ";
-        $result = mysql_query($sql, $conn);
-        $row = mysql_fetch_row($result);
+        $fail_message = "Could not get count of matching tables.";
+        $row = self::$store->processOneRowQuery($sql, $fail_message);
         $this->assertEquals(
             2,
             $row[0],
