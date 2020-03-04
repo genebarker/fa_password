@@ -91,15 +91,15 @@ class MySQLStoreTest extends TestCase
         $this->assertRegExp('/MySQL \d+\.\d+.*/', $version);
     }
 
-    public function testOneRowQueryReturnsResult()
+    public function testDoQueryAndGetRowReturnsRow()
     {
         $sql = 'SELECT 1+1';
         $fail_message = 'Can not add.';
-        $row = self::$store->processOneRowQuery($sql, $fail_message);
+        $row = self::$store->doQueryAndGetRow($sql, $fail_message);
         $this->assertEquals('2', $row[0]);
     }
 
-    public function testOneRowQueryThrowsOnError()
+    public function testDoQueryThrowsOnError()
     {
         $sql = 'SELECT unknown_column';
         $fail_message = 'Did bad select.';
@@ -111,10 +111,10 @@ class MySQLStoreTest extends TestCase
         $this->expectExceptionMessage($exception_msg);
         $this->expectExceptionCode(Datastore::QUERY_ERROR);
 
-        self::$store->processOneRowQuery($sql, $fail_message);
+        self::$store->doQuery($sql, $fail_message);
     }
 
-    public function testOneRowQueryThrowTrimsTheSQL()
+    public function testDoQueryThrowTrimsTheSQL()
     {
         $sql = "SELECT *
                 FROM unknown_table";
@@ -123,7 +123,7 @@ class MySQLStoreTest extends TestCase
             '/^Failed\..*SQL: SELECT \* FROM unknown_table$/'
         );
         $this->expectExceptionCode(Datastore::QUERY_ERROR);
-        self::$store->processOneRowQuery($sql, $fail_message);
+        self::$store->doQuery($sql, $fail_message);
     }
 
     public function testCommitTransactionCommits()
@@ -139,14 +139,14 @@ class MySQLStoreTest extends TestCase
     {
         $sql = "DELETE FROM 0_pwe_user";
         $fail_message = "Could not delete rows.";
-        self::$store->executeQuery($sql, $fail_message);
+        self::$store->doQuery($sql, $fail_message);
     }
 
     private function getExtUsersCount()
     {
         $sql = "SELECT count(*) FROM 0_pwe_user";
         $fail_message = "Could not get row count.";
-        $row = self::$store->processOneRowQuery($sql, $fail_message);
+        $row = self::$store->doQueryAndGetRow($sql, $fail_message);
         return $row[0];
     }
 
@@ -174,7 +174,7 @@ class MySQLStoreTest extends TestCase
                     AND table_name IN ('0_pwe_user', '0_pwe_config');
         ";
         $fail_message = "Could not get count of matching tables.";
-        $row = self::$store->processOneRowQuery($sql, $fail_message);
+        $row = self::$store->doQueryAndGetRow($sql, $fail_message);
         $this->assertEquals(
             2,
             $row[0],

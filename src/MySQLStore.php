@@ -37,17 +37,17 @@ class MySQLStore implements Datastore
     {
         $sql = "SELECT version()";
         $fail_message = "Could not get version from MySQL.";
-        $row = $this->processOneRowQuery($sql, $fail_message);
+        $row = $this->doQueryAndGetRow($sql, $fail_message);
         return 'MySQL ' . $row[0];
     }
 
-    public function processOneRowQuery($sql, $fail_message)
+    public function doQueryAndGetRow($sql, $fail_message)
     {
-        $result = $this->executeQuery($sql, $fail_message);
+        $result = $this->doQuery($sql, $fail_message);
         return mysql_fetch_row($result);
     }
 
-    public function executeQuery($sql, $fail_message)
+    public function doQuery($sql, $fail_message)
     {
         $result = mysql_query($sql, $this->conn);
         if (!$result) {
@@ -75,21 +75,21 @@ class MySQLStore implements Datastore
     {
         $sql = "START TRANSACTION";
         $fail_message = "Could not start a MySQL transaction.";
-        $this->executeQuery($sql, $fail_message);
+        $this->doQuery($sql, $fail_message);
     }
 
     public function commitTransaction()
     {
         $sql = "COMMIT";
         $fail_message = "Could not commit a MySQL transaction.";
-        $this->executeQuery($sql, $fail_message);
+        $this->doQuery($sql, $fail_message);
     }
 
     public function rollbackTransaction()
     {
         $sql = "ROLLBACK";
         $fail_message = "Could not rollback a MySQL transaction.";
-        $this->executeQuery($sql, $fail_message);
+        $this->doQuery($sql, $fail_message);
     }
 
     public function buildDatabaseSchema()
@@ -139,7 +139,7 @@ class MySQLStore implements Datastore
         foreach ($key as $okey) {
             $sql = "SELECT val FROM 0_pwe_config WHERE okey = '$okey'";
             $fail_message = "Could not config value ($okey).";
-            $row = $this->processOneRowQuery($sql, $fail_message);
+            $row = $this->doQueryAndGetRow($sql, $fail_message);
             $config->$okey = $row[0];
         }
         return $config;
