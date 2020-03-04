@@ -4,8 +4,9 @@ spl_autoload_register(
     function ($full_class_name) {
         $class_dir = [
             '/src',
-            '/zxcvbn-php/src/',
-            '/zxcvbn-php/src/Matchers',
+            '/vendor/zxcvbn-php/src/',
+            '/vendor/zxcvbn-php/src/Matchers',
+            '/vendor/polyfill-mbstring',
         ];
         foreach ($class_dir as $dir) {
             if (class_exists($full_class_name)) {
@@ -20,3 +21,5 @@ spl_autoload_register(
         }
     }
 );
+
+require_once(__DIR__ . '/vendor/polyfill-mbstring/bootstrap.php');

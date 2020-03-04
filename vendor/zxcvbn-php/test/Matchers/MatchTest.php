@@ -2,12 +2,11 @@
 
 namespace ZxcvbnPhp\Test\Matchers;
 
-use PHPUnit\Framework\TestCase;
 use ZxcvbnPhp\Matchers\DateMatch;
 use ZxcvbnPhp\Matchers\Match;
 use ZxcvbnPhp\Matchers\MatchInterface;
 
-class MatchTest extends TestCase
+class MatchTest extends \PHPUnit_Framework_TestCase
 {
     public function binomialDataProvider()
     {

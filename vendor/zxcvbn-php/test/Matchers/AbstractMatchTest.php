@@ -2,9 +2,7 @@
 
 namespace ZxcvbnPhp\Test\Matchers;
 
-use PHPUnit\Framework\TestCase;
-
-abstract class AbstractMatchTest extends TestCase
+abstract class AbstractMatchTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * takes a pattern and list of prefixes/suffixes

@@ -1,14 +1,12 @@
 <?php
-
 namespace ZxcvbnPhp\Test;
 
-use PHPUnit\Framework\TestCase;
 use ZxcvbnPhp\Feedback;
 use ZxcvbnPhp\Matchers\Bruteforce;
 use ZxcvbnPhp\Matchers\DateMatch;
 use ZxcvbnPhp\Matchers\SequenceMatch;
 
-class FeedbackTest extends TestCase
+class FeedbackTest extends \PHPUnit_Framework_TestCase
 {
     /** @var Feedback */
     private $feedback;

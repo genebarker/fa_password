@@ -2,16 +2,15 @@
 
 namespace ZxcvbnPhp\Test;
 
-use PHPUnit\Framework\TestCase;
 use ZxcvbnPhp\Scorer;
 use ZxcvbnPhp\Test\Matchers\MockMatch;
 
 /**
  * @covers \ZxcvbnPhp\Scorer
  */
-class ScorerTest extends TestCase
+class ScorerTest extends \PHPUnit_Framework_TestCase
 {
-    public const PASSWORD = '0123456789';
+    const PASSWORD = '0123456789';
 
     /** @var Scorer */
     private $scorer;

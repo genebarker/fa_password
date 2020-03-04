@@ -4,7 +4,7 @@ namespace ZxcvbnPhp\Matchers;
 
 class SequenceMatch extends Match
 {
-    public const MAX_DELTA = 5;
+    const MAX_DELTA = 5;
 
     public $pattern = 'sequence';
 

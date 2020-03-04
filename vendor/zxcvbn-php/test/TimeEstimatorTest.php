@@ -1,11 +1,9 @@
 <?php
-
 namespace ZxcvbnPhp\Test;
 
-use PHPUnit\Framework\TestCase;
 use ZxcvbnPhp\TimeEstimator;
 
-class TimeEstimatorTest extends TestCase
+class TimeEstimatorTest extends \PHPUnit_Framework_TestCase
 {
     /** @var TimeEstimator */
     private $timeEstimator;
