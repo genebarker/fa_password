@@ -104,27 +104,30 @@ class MySQLStore implements Datastore
         $filepath = __DIR__ . '/' . $filename;
         $handle = @fopen($filepath, 'r');
         if (!$handle) {
-            return false;
+            $cause = "Could not open file ($filename).";
+            $message = "$fail_message Cause: $cause";
+            throw new Exception($message);
         }
+        try {
+            $this->processSQLFromStream($handle, $fail_message);
+        } finally {
+            fclose($handle);
+        }
+    }
+
+    private function processSQLFromStream($handle, $fail_message)
+    {
         $sql = '';
-        $result = false;
         while (($line = fgets($handle)) !== false) {
             if (self::isCommentLine($line) || self::isEmptyLine($line)) {
                 continue;
             }
             $sql .= $line;
             if (self::endsWithSemicolon($line)) {
-                try {
-                    $result = $this->doQuery($sql, $fail_message);
-                } catch (\Exception $e) {
-                    fclose($handle);
-                    throw $e;
-                }
+                $this->doQuery($sql, $fail_message);
                 $sql = '';
             }
         }
-        fclose($handle);
-        return $result;
     }
 
     private static function isCommentLine($line)
