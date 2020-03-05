@@ -6,29 +6,29 @@ use PHPUnit\Framework\TestCase;
 
 class MySQLStoreTest extends TestCase
 {
-    const MYSQL_DB_CONFIG_FILE = 'config_db.php';
-    const MYSQL_REF_SCHEMA_FILE = 'mysql_build_ref_schema.sql';
-    const MYSQL_TEST_DATA_FILE = 'mysql_load_test_data.sql';
+    const MYSQL_TEST_CONFIG_FILE = __DIR__ . '/config_db.php';
+    const MYSQL_REF_SCHEMA_FILE = __DIR__ . '/mysql_build_ref_schema.sql';
+    const MYSQL_TEST_DATA_FILE = __DIR__ . '/mysql_load_test_data.sql';
 
-    private static $db_config;
     private static $store;
 
     public static function setUpBeforeClass()
     {
-        self::$db_config = require(self::MYSQL_DB_CONFIG_FILE);
-        self::$store = self::getDatastore();
-        self::buildTestDatabaseSchema(self::$store);
+        self::$store = self::getTestDatastore();
     }
 
-    private static function getDatastore()
+    public static function getTestDatastore($new_link = false)
     {
         $store = new MySQLStore();
+        $db_config = require(self::MYSQL_TEST_CONFIG_FILE);
         $store->openConnection(
-            self::$db_config['host'],
-            self::$db_config['username'],
-            self::$db_config['password'],
-            self::$db_config['db_name']
+            $db_config['host'],
+            $db_config['username'],
+            $db_config['password'],
+            $db_config['db_name'],
+            $new_link
         );
+        self::buildTestDatabaseSchema($store);
         return $store;
     }
 
@@ -42,9 +42,14 @@ class MySQLStoreTest extends TestCase
 
     protected function setUp()
     {
+        self::loadTestData(self::$store);
+    }
+
+    public static function loadTestData($store)
+    {
         $filename = self::MYSQL_TEST_DATA_FILE;
         $fail_message = 'Failed to load MySQL test data.';
-        self::$store->executeSQLFromFile($filename, $fail_message);
+        $store->executeSQLFromFile($filename, $fail_message);
     }
 
     public function testImplementsDatastore()
@@ -60,10 +65,7 @@ class MySQLStoreTest extends TestCase
         $sql = 'SELECT DATABASE();';
         $result = mysql_query($sql, $conn);
         $row = mysql_fetch_row($result);
-        $this->assertEquals(
-            self::$db_config['db_name'],
-            $row[0]
-        );
+        $this->assertEquals('fa23test', $row[0]);
     }
 
     public function testCloseConnectionCloses()
@@ -82,13 +84,8 @@ class MySQLStoreTest extends TestCase
     private function getPrivateLinkToDatabase()
     {
         $create_new_link = true;
-        $link = mysql_connect(
-            self::$db_config['host'],
-            self::$db_config['username'],
-            self::$db_config['password'],
-            $create_new_link
-        );
-        return $link;
+        $store = self::getTestDatastore($create_new_link);
+        return $store->conn;
     }
 
     public function testSetConnectionSets()

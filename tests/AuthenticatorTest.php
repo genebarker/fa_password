@@ -12,17 +12,8 @@ class AuthenticatorTest extends TestCase
 
     public static function setUpBeforeClass()
     {
-        $db_config = require('config_db.php');
-        $store = new MySQLStore();
-        $store->openConnection(
-            $db_config['host'],
-            $db_config['username'],
-            $db_config['password'],
-            $db_config['db_name']
-        );
-        $store->buildDatabaseSchema();
-        self::$store = $store;
-        self::$authenticator = new Authenticator($store);
+        self::$store = MySQLStoreTest::getTestDatastore();
+        self::$authenticator = new Authenticator(self::$store);
     }
 
     public static function tearDownAfterClass()
@@ -32,9 +23,7 @@ class AuthenticatorTest extends TestCase
 
     protected function setUp()
     {
-        $filename = MySQLStoreTest::MYSQL_TEST_DATA_FILE;
-        $fail_message = 'Failed to load MySQL test data.';
-        self::$store->executeSQLFromFile($filename, $fail_message);
+        MySQLStoreTest::loadTestData(self::$store);
     }
 
     protected function tearDown()

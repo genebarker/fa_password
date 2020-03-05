@@ -7,14 +7,19 @@ use madman\Password\User;
 
 class MySQLStore implements Datastore
 {
-    const MYSQL_EXT_SCHEMA_FILE = 'mysql_build_ext_schema.sql';
+    const MYSQL_EXT_SCHEMA_FILE = __DIR__ . '/mysql_build_ext_schema.sql';
     const MYSQL_TIMESTAMP_FORMAT = 'Y-m-d H:i:s';
 
     public $conn = null;
 
-    public function openConnection($host, $username, $password, $db_name)
-    {
-        $link = mysql_connect($host, $username, $password);
+    public function openConnection(
+        $host,
+        $username,
+        $password,
+        $db_name,
+        $new_link = false
+    ) {
+        $link = mysql_connect($host, $username, $password, $new_link);
         mysql_select_db($db_name);
         $this->conn = $link;
     }
@@ -96,15 +101,17 @@ class MySQLStore implements Datastore
     public function buildDatabaseSchema()
     {
         $fail_message = 'Failed to build MySQL password extension tables.';
-        $this->executeSQLFromFile(self::MYSQL_EXT_SCHEMA_FILE, $fail_message);
+        $this->executeSQLFromFile(
+            self::MYSQL_EXT_SCHEMA_FILE,
+            $fail_message
+        );
     }
 
-    public function executeSQLFromFile($filename, $fail_message)
+    public function executeSQLFromFile($filepath, $fail_message)
     {
-        $filepath = __DIR__ . '/' . $filename;
         $handle = @fopen($filepath, 'r');
         if (!$handle) {
-            $cause = "Could not open file ($filename).";
+            $cause = "Could not open file ($filepath).";
             $message = "$fail_message Cause: $cause";
             throw new Exception($message);
         }
