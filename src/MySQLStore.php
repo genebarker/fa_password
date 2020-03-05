@@ -7,7 +7,7 @@ use madman\Password\User;
 
 class MySQLStore implements Datastore
 {
-    const MYSQL_SCHEMA_FILE = 'mysql_build_schema.sql';
+    const MYSQL_EXT_SCHEMA_FILE = 'mysql_build_ext_schema.sql';
     const MYSQL_TIMESTAMP_FORMAT = 'Y-m-d H:i:s';
 
     public $conn = null;
@@ -95,8 +95,8 @@ class MySQLStore implements Datastore
 
     public function buildDatabaseSchema()
     {
-        $fail_message = 'Could not build MySQL schema';
-        $this->executeSQLFromFile(self::MYSQL_SCHEMA_FILE, $fail_message);
+        $fail_message = 'Failed to build MySQL password extension tables.';
+        $this->executeSQLFromFile(self::MYSQL_EXT_SCHEMA_FILE, $fail_message);
     }
 
     public function executeSQLFromFile($filename, $fail_message)

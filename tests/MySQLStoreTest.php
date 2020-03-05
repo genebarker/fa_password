@@ -6,6 +6,8 @@ use PHPUnit\Framework\TestCase;
 
 class MySQLStoreTest extends TestCase
 {
+    const MYSQL_DB_CONFIG_FILE = 'config_db.php';
+    const MYSQL_REF_SCHEMA_FILE = 'mysql_build_ref_schema.sql';
     const MYSQL_TEST_DATA_FILE = 'mysql_load_test_data.sql';
 
     private static $db_config;
@@ -13,9 +15,9 @@ class MySQLStoreTest extends TestCase
 
     public static function setUpBeforeClass()
     {
-        self::$db_config = require('config_db.php');
+        self::$db_config = require(self::MYSQL_DB_CONFIG_FILE);
         self::$store = self::getDatastore();
-        self::$store->buildDatabaseSchema();
+        self::buildTestDatabaseSchema(self::$store);
     }
 
     private static function getDatastore()
@@ -28,6 +30,14 @@ class MySQLStoreTest extends TestCase
             self::$db_config['db_name']
         );
         return $store;
+    }
+
+    protected static function buildTestDatabaseSchema($store)
+    {
+        $filename = self::MYSQL_REF_SCHEMA_FILE;
+        $fail_message = 'Failed to build MySQL FA reference tables.';
+        $store->executeSQLFromFile($filename, $fail_message);
+        $store->buildDatabaseSchema();
     }
 
     protected function setUp()
