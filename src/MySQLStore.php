@@ -7,6 +7,7 @@ use madman\Password\User;
 
 class MySQLStore implements Datastore
 {
+    const MYSQL_SCHEMA_FILE = 'mysql_build_schema.sql';
     const MYSQL_TIMESTAMP_FORMAT = 'Y-m-d H:i:s';
 
     public $conn = null;
@@ -94,14 +95,11 @@ class MySQLStore implements Datastore
 
     public function buildDatabaseSchema()
     {
-        $result = $this->executeSQLFromFile('mysql_build_schema.sql');
-        if (!$result) {
-            $cause = empty(mysql_error()) ? 'Unknown' : mysql_error();
-            throw new Exception('Failed to build schema. Cause: ' . $cause);
-        }
+        $fail_message = 'Could not build MySQL schema';
+        $this->executeSQLFromFile(self::MYSQL_SCHEMA_FILE, $fail_message);
     }
 
-    public function executeSQLFromFile($filename)
+    public function executeSQLFromFile($filename, $fail_message)
     {
         $filepath = __DIR__ . '/' . $filename;
         $handle = @fopen($filepath, 'r');
@@ -111,22 +109,41 @@ class MySQLStore implements Datastore
         $sql = '';
         $result = false;
         while (($line = fgets($handle)) !== false) {
-            $sql .= $line;
-            $comment_pos = strpos($line, '--');
-            if ($comment_pos !== false && $comment_pos == 0) {
+            if (self::isCommentLine($line) || self::isEmptyLine($line)) {
                 continue;
             }
-            $cmd_end_pos = strpos($line, ';');
-            if ($cmd_end_pos !== false) {
-                $result = mysql_query($sql, $this->conn);
-                if (!$result) {
-                    break;
+            $sql .= $line;
+            if (self::endsWithSemicolon($line)) {
+                try {
+                    $result = $this->doQuery($sql, $fail_message);
+                } catch (\Exception $e) {
+                    fclose($handle);
+                    throw $e;
                 }
                 $sql = '';
             }
         }
         fclose($handle);
         return $result;
+    }
+
+    private static function isCommentLine($line)
+    {
+        $tag_pos = strpos($line, '--');
+        if (!$tag_pos) {
+            return false;
+        }
+        return $tag_pos == 0;
+    }
+
+    private static function isEmptyLine($line)
+    {
+        return (trim($line) == '');
+    }
+
+    private static function endsWithSemicolon($line)
+    {
+        return (substr(trim($line), -1) == ';');
     }
 
     public function getConfig()

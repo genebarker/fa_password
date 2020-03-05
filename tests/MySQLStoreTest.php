@@ -6,6 +6,8 @@ use PHPUnit\Framework\TestCase;
 
 class MySQLStoreTest extends TestCase
 {
+    const MYSQL_TEST_DATA_FILE = 'mysql_load_test_data.sql';
+
     private static $db_config;
     private static $store;
 
@@ -30,7 +32,9 @@ class MySQLStoreTest extends TestCase
 
     protected function setUp()
     {
-        self::$store->executeSQLFromFile('mysql_load_test_data.sql');
+        $filename = self::MYSQL_TEST_DATA_FILE;
+        $fail_message = 'Failed to load MySQL test data.';
+        self::$store->executeSQLFromFile($filename, $fail_message);
     }
 
     public function testImplementsDatastore()

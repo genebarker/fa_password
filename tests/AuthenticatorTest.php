@@ -32,7 +32,9 @@ class AuthenticatorTest extends TestCase
 
     protected function setUp()
     {
-        self::$store->executeSQLFromFile('mysql_load_test_data.sql');
+        $filename = MySQLStoreTest::MYSQL_TEST_DATA_FILE;
+        $fail_message = 'Failed to load MySQL test data.';
+        self::$store->executeSQLFromFile($filename, $fail_message);
     }
 
     protected function tearDown()
