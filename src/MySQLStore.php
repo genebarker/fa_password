@@ -55,9 +55,10 @@ class MySQLStore implements Datastore
 
     public function doQuery($sql, $fail_message)
     {
-        $result = mysql_query($sql, $this->conn);
+        $trimmed_sql = Dedenter::dedent($sql);
+        $result = mysql_query($trimmed_sql, $this->conn);
         if (!$result) {
-            $this->throwDatabaseException($sql, $fail_message);
+            $this->throwDatabaseException($trimmed_sql, $fail_message);
         }
         return $result;
     }
@@ -66,7 +67,7 @@ class MySQLStore implements Datastore
     {
         $cause = mysql_error($this->conn) ?: 'Unknown';
         $sql = $this->collapseSQL($sql);
-        $message = "$error_message Cause: $cause. SQL: $sql";
+        $message = "$error_message Cause: $cause. SQL:\n$sql";
         throw new Exception($message, self::QUERY_ERROR);
     }
 

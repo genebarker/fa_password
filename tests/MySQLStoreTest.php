@@ -117,23 +117,12 @@ class MySQLStoreTest extends TestCase
 
         $exception_msg = (
             "Did bad select. Cause: Unknown column 'unknown_column' in " .
-            "'field list'. SQL: SELECT unknown_column"
+            "'field list'. SQL:\n" .
+            "SELECT unknown_column"
         );
         $this->expectExceptionMessage($exception_msg);
         $this->expectExceptionCode(Datastore::QUERY_ERROR);
 
-        self::$store->doQuery($sql, $fail_message);
-    }
-
-    public function testDoQueryThrowTrimsTheSQL()
-    {
-        $sql = "SELECT *
-                FROM unknown_table";
-        $fail_message = 'Failed.';
-        $this->expectExceptionMessageRegExp(
-            '/^Failed\..*SQL: SELECT \* FROM unknown_table$/'
-        );
-        $this->expectExceptionCode(Datastore::QUERY_ERROR);
         self::$store->doQuery($sql, $fail_message);
     }
 
