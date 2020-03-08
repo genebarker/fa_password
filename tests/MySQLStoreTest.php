@@ -126,6 +126,15 @@ class MySQLStoreTest extends TestCase
         self::$store->doQuery($sql, $fail_message);
     }
 
+    public function testDoQueryAndGetRowThrowsWhenNoRow()
+    {
+        $sql = 'SELECT oid FROM 0_pwe_user WHERE oid = -999';
+        $fail_message = 'No matching row to get.';
+
+        $this->expectExceptionCode(Datastore::NO_MATCHING_ROW_FOUND);
+        self::$store->doQueryAndGetRow($sql, $fail_message);
+    }
+
     public function testCommitTransactionCommits()
     {
         self::$store->startTransaction();

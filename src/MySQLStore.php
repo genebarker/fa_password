@@ -50,6 +50,9 @@ class MySQLStore implements Datastore
     public function doQueryAndGetRow($sql, $fail_message)
     {
         $result = $this->doQuery($sql, $fail_message);
+        if (mysql_num_rows($result) == 0) {
+            throw new Exception($fail_message, self::NO_MATCHING_ROW_FOUND);
+        }
         return mysql_fetch_row($result);
     }
 

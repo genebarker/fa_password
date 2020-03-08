@@ -6,6 +6,7 @@ interface Datastore
 {
     const QUERY_ERROR = 1000;
     const UNKNOWN_USERNAME = 1001;
+    const NO_MATCHING_ROW_FOUND = 1002;
 
     public function openConnection($host, $username, $password, $db_name);
     public function getConnection();
