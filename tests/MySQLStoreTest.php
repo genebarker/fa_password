@@ -246,4 +246,16 @@ class MySQLStoreTest extends TestCase
         $user_after = self::$store->getUserByUsername('fmulder');
         $this->assertEquals($user, $user_after);
     }
+
+    public function testUpdateUserThrowsOnError()
+    {
+        $user = self::$store->getUserByUsername('fmulder');
+        $user->oid = -999;
+
+        $this->expectExceptionCode(Datastore::NO_AFFECTED_ROWS);
+        $this->expectExceptionMessage(
+            'Could not update user (oid=-999, username=fmulder).'
+        );
+        self::$store->updateUser($user);
+    }
 }

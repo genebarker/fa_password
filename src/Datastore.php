@@ -6,6 +6,7 @@ interface Datastore
 {
     const QUERY_ERROR = 1000;
     const NO_MATCHING_ROW_FOUND = 1002;
+    const NO_AFFECTED_ROWS = 1003;
 
     public function openConnection($host, $username, $password, $db_name);
     public function getConnection();

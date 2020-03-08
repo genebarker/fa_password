@@ -228,11 +228,21 @@ class MySQLStore implements Datastore
             self::convertToSQLTimestamp($user->last_pw_fail_time),
             $user->oid
         );
-        $result = mysql_query($query, $this->conn);
+        $fail_message = "Could not update user (oid={$user->oid}, " .
+                        "username={$user->username}).";
+        $this->doUpdateRowQuery($query, $fail_message);
     }
 
     public static function convertToSQLTimestamp($php_date)
     {
         return date_format($php_date, self::MYSQL_TIMESTAMP_FORMAT);
+    }
+
+    public function doUpdateRowQuery($sql, $fail_message)
+    {
+        $result = $this->doQuery($sql, $fail_message);
+        if (mysql_affected_rows($this->conn) == 0) {
+            throw new Exception($fail_message, self::NO_AFFECTED_ROWS);
+        }
     }
 }
