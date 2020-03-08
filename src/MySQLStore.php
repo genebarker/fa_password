@@ -186,14 +186,8 @@ class MySQLStore implements Datastore
                     AND u2.oid = u.id
         ";
         $query = sprintf($sql, mysql_real_escape_string($username));
-        $result = mysql_query($query, $this->conn);
-        if (mysql_num_rows($result) == 0) {
-            throw new Exception(
-                "Username ($username) does not exist.",
-                self::UNKNOWN_USERNAME
-            );
-        }
-        $row = mysql_fetch_row($result);
+        $fail_message = "Could not get user (username=$username).";
+        $row = $this->doQueryAndGetRow($query, $fail_message);
 
         $user = new User($row[0], $row[1]);
         $user->pw_hash = $row[2];

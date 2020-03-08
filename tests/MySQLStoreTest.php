@@ -224,8 +224,10 @@ class MySQLStoreTest extends TestCase
 
     public function testGetUserThrowsOnUnknown()
     {
-        $this->expectExceptionCode(Datastore::UNKNOWN_USERNAME);
-        $this->expectExceptionMessage('Username (UNKNOWN) does not exist.');
+        $this->expectExceptionCode(Datastore::NO_MATCHING_ROW_FOUND);
+        $this->expectExceptionMessage(
+            'Could not get user (username=UNKNOWN).'
+        );
         self::$store->getUserByUsername('UNKNOWN');
     }
 
