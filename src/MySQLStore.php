@@ -69,16 +69,8 @@ class MySQLStore implements Datastore
     public function throwDatabaseException($sql, $error_message)
     {
         $cause = mysql_error($this->conn) ?: 'Unknown';
-        $sql = $this->collapseSQL($sql);
         $message = "$error_message Cause: $cause. SQL:\n$sql";
         throw new Exception($message, self::QUERY_ERROR);
-    }
-
-    public static function collapseSQL($sql)
-    {
-        $lines = explode("\n", $sql);
-        $lines = array_map('trim', $lines);
-        return implode(' ', $lines);
     }
 
     public function startTransaction()
