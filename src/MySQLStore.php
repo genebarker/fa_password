@@ -183,8 +183,8 @@ class MySQLStore implements Datastore
 
         $user = new User($row[0], $row[1]);
         $user->pw_hash = $row[2];
-        $user->needs_pw_change = $row[3];
-        $user->is_locked = $row[4];
+        $user->needs_pw_change = ($row[3] != 0);
+        $user->is_locked = ($row[4] != 0);
         $user->ongoing_pw_fail_count = $row[5];
         $user->last_pw_fail_time = (
             $row[6] == null ? null : self::convertToPHPDate($row[6])
