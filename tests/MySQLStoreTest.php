@@ -135,6 +135,26 @@ class MySQLStoreTest extends TestCase
         self::$store->doQueryAndGetRow($sql, $fail_message);
     }
 
+    public function testUpdateQueryThrowsWhenNoRowsMatched()
+    {
+        $sql = 'UPDATE 0_pwe_user SET pw_hash = null WHERE oid = -999';
+        $fail_message = 'No matching rows to update.';
+
+        $this->expectExceptionCode(Datastore::NO_MATCHING_ROW_FOUND);
+        self::$store->doUpdateQuery($sql, $fail_message);
+    }
+
+    public function testUpdateQueryReturnsRowsMatched()
+    {
+        $sql = "UPDATE 0_pwe_user SET pw_hash = null
+                WHERE oid IN (101, 102)
+        ";
+        $fail_message = "Can not update users.";
+
+        $rows_matched = self::$store->doUpdateQuery($sql, $fail_message);
+        $this->assertEquals(2, $rows_matched, 'Should match 2 users.');
+    }
+
     public function testCommitTransactionCommits()
     {
         self::$store->startTransaction();
@@ -252,7 +272,7 @@ class MySQLStoreTest extends TestCase
         $user = self::$store->getUserByUsername('fmulder');
         $user->oid = -999;
 
-        $this->expectExceptionCode(Datastore::NO_AFFECTED_ROWS);
+        $this->expectExceptionCode(Datastore::NO_MATCHING_ROW_FOUND);
         $this->expectExceptionMessage(
             'Could not update user (oid=-999, username=fmulder).'
         );

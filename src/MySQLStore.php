@@ -222,7 +222,7 @@ class MySQLStore implements Datastore
         );
         $fail_message = "Could not update user (oid={$user->oid}, " .
                         "username={$user->username}).";
-        $this->doUpdateRowQuery($query, $fail_message);
+        $this->doUpdateQuery($query, $fail_message);
     }
 
     public static function convertToSQLTimestamp($php_date)
@@ -230,11 +230,20 @@ class MySQLStore implements Datastore
         return date_format($php_date, self::MYSQL_TIMESTAMP_FORMAT);
     }
 
-    public function doUpdateRowQuery($sql, $fail_message)
+    public function doUpdateQuery($sql, $fail_message)
     {
         $result = $this->doQuery($sql, $fail_message);
-        if (mysql_affected_rows($this->conn) == 0) {
-            throw new Exception($fail_message, self::NO_AFFECTED_ROWS);
+        $rows_matched = $this->getRowsMatchedForUpdate();
+        if ($rows_matched == 0) {
+            throw new Exception($fail_message, self::NO_MATCHING_ROW_FOUND);
         }
+        return $rows_matched;
+    }
+
+    public function getRowsMatchedForUpdate()
+    {
+        $info = mysql_info($this->conn);
+        preg_match('/Rows matched: (\d+)/', $info, $regex_match);
+        return $regex_match[1];
     }
 }
