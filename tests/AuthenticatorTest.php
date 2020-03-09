@@ -126,4 +126,12 @@ class AuthenticatorTest extends TestCase
         $loginAttempt = self::$authenticator->login('fmulder', 'scully');
         $this->assertEquals(false, $loginAttempt->has_failed);
     }
+
+    public function testLoginWithNewPasswordChangesIt()
+    {
+        $new_password = 'someNEWpassword!';
+        self::$authenticator->login('fmulder', 'scully', $new_password);
+        $user = self::$store->getUserByUsername('fmulder');
+        $this->assertTrue(password_verify($new_password, $user->pw_hash));
+    }
 }

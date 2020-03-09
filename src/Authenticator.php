@@ -15,7 +15,7 @@ class Authenticator
         $this->config = $store->getConfig();
     }
 
-    public function login($username, $password)
+    public function login($username, $password, $new_password = null)
     {
         try {
             $user = $this->store->getUserByUsername($username);
@@ -38,11 +38,15 @@ class Authenticator
             return new LoginAttempt();
         }
 
+        if ($new_password != null) {
+            $user->pw_hash = password_hash($new_password, PASSWORD_DEFAULT);
+        }
+
         $user->ongoing_pw_fail_count = 0;
         $this->store->updateUser($user);
         $has_failed = false;
         $message = "Welcome back $username.";
-        return new LoginAttempt($has_failed);
+        return new LoginAttempt($has_failed, $message);
     }
 
     public function tooSoonToTryAgain($user)
