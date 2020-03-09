@@ -40,6 +40,13 @@ class Authenticator
 
         if ($new_password != null) {
             $user->pw_hash = password_hash($new_password, PASSWORD_DEFAULT);
+            $user->needs_pw_change = false;
+        }
+
+        if ($user->needs_pw_change) {
+            $has_failed = true;
+            $message = 'You must use the new password option to login.';
+            return new LoginAttempt($has_failed, $message);
         }
 
         $user->ongoing_pw_fail_count = 0;

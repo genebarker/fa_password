@@ -127,11 +127,30 @@ class AuthenticatorTest extends TestCase
         $this->assertEquals(false, $loginAttempt->has_failed);
     }
 
+    public function testFailsWhenNeedsPasswordChange()
+    {
+        $loginAttempt = self::$authenticator->login('dscully', 'mulder');
+        $this->assertEquals(true, $loginAttempt->has_failed);
+        $this->assertEquals(
+            'You must use the new password option to login.',
+            $loginAttempt->message
+        );
+    }
+
     public function testLoginWithNewPasswordChangesIt()
     {
         $new_password = 'someNEWpassword!';
         self::$authenticator->login('fmulder', 'scully', $new_password);
         $user = self::$store->getUserByUsername('fmulder');
         $this->assertTrue(password_verify($new_password, $user->pw_hash));
+    }
+
+    public function testLoginWithNewPasswordClearsNeedsPasswordFlag()
+    {
+        $new_password = 'someNEWpassword!';
+        self::$authenticator->login('dscully', 'mulder', $new_password);
+        $user = self::$store->getUserByUsername('dscully');
+        var_dump($user);
+        $this->assertEquals(false, $user->needs_pw_change);
     }
 }
