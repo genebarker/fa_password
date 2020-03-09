@@ -7,6 +7,7 @@ security:
 - verify new passwords meet minimun strength requirements
   (uses zxcvbn)
 - require password change when too old
+- require password change when admin resets it
 - on repeated password failures, disable user login for set time
 - provide mechanism for admin to adjust settings for above features
 
