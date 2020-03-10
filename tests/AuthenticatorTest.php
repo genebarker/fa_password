@@ -150,7 +150,6 @@ class AuthenticatorTest extends TestCase
         $new_password = 'someNEWpassword!';
         self::$authenticator->login('dscully', 'mulder', $new_password);
         $user = self::$store->getUserByUsername('dscully');
-        var_dump($user);
         $this->assertEquals(false, $user->needs_pw_change);
     }
 }
