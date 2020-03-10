@@ -43,8 +43,10 @@ class Authenticator
         if ($new_password != null) {
             if ($this->passwordTooWeak($username, $new_password)) {
                 $has_failed = true;
-                $message = 'New password is too weak. Please provide a ' .
-                           'stronger password.';
+                $message = trim(
+                    'New password is too weak. ' .
+                    $this->zxcvbn->getPasswordHints($username, $new_password)
+                );
                 return new LoginAttempt($has_failed, $message);
             }
             $user->pw_hash = password_hash($new_password, PASSWORD_DEFAULT);

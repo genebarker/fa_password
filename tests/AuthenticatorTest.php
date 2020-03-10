@@ -181,8 +181,24 @@ class AuthenticatorTest extends TestCase
             $weak_new_password
         );
         $this->assertEquals(true, $loginAttempt->has_failed);
+        $this->assertStringStartsWith(
+            'New password is too weak.',
+            $loginAttempt->message
+        );
+    }
+
+    public function testLoginWithNewPasswordFailureReturnsWithHints()
+    {
+        $weak_new_password = 'password';
+        $loginAttempt = self::$authenticator->login(
+            'fmulder',
+            'scully',
+            $weak_new_password
+        );
+        $zxcvbn = new ZxcvbnWrapper();
+        $password_hints = $zxcvbn->getPasswordHints('fmulder', 'password');
         $this->assertEquals(
-            'New password is too weak. Please provide a stronger password.',
+            'New password is too weak. ' . $password_hints,
             $loginAttempt->message
         );
     }
