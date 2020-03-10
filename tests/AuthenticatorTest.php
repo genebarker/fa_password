@@ -171,4 +171,19 @@ class AuthenticatorTest extends TestCase
         $user = self::$store->getUserByUsername('dscully');
         $this->assertEquals(false, $user->needs_pw_change);
     }
+
+    public function testLoginWithNewPasswordFailsWhenTooWeak()
+    {
+        $weak_new_password = 'password';
+        $loginAttempt = self::$authenticator->login(
+            'fmulder',
+            'scully',
+            $weak_new_password
+        );
+        $this->assertEquals(true, $loginAttempt->has_failed);
+        $this->assertEquals(
+            'New password is too weak. Please provide a stronger password.',
+            $loginAttempt->message
+        );
+    }
 }

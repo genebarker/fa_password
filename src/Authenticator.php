@@ -3,16 +3,19 @@
 namespace madman\Password;
 
 use DateInterval;
+use ZxcvbnPhp\Zxcvbn;
 
 class Authenticator
 {
     public $store;
     public $config;
+    public $zxcvbn;
 
     public function __construct($store)
     {
         $this->store = $store;
         $this->config = $store->getConfig();
+        $this->zxcvbn = new Zxcvbn();
     }
 
     public function login($username, $password, $new_password = null)
@@ -39,6 +42,12 @@ class Authenticator
         }
 
         if ($new_password != null) {
+            if ($this->passwordTooWeak($username, $new_password)) {
+                $has_failed = true;
+                $message = 'New password is too weak. Please provide a ' .
+                           'stronger password.';
+                return new LoginAttempt($has_failed, $message);
+            }
             $user->pw_hash = password_hash($new_password, PASSWORD_DEFAULT);
             $user->needs_pw_change = false;
         }
@@ -65,5 +74,12 @@ class Authenticator
         $now = date_create('now');
 
         return $now < $expire_time;
+    }
+
+    public function passwordTooWeak($username, $password) {
+        $user_data = [$username];
+        $strength = $this->zxcvbn->passwordStrength($password, $user_data);
+        $score = $strength['score'];
+        return ($score < $this->config->minimum_password_strength);
     }
 }
