@@ -3,7 +3,6 @@
 namespace madman\Password;
 
 use DateInterval;
-use ZxcvbnPhp\Zxcvbn;
 
 class Authenticator
 {
@@ -15,7 +14,7 @@ class Authenticator
     {
         $this->store = $store;
         $this->config = $store->getConfig();
-        $this->zxcvbn = new Zxcvbn();
+        $this->zxcvbn = new ZxcvbnWrapper();
     }
 
     public function login($username, $password, $new_password = null)
@@ -76,10 +75,9 @@ class Authenticator
         return $now < $expire_time;
     }
 
-    public function passwordTooWeak($username, $password) {
-        $user_data = [$username];
-        $strength = $this->zxcvbn->passwordStrength($password, $user_data);
-        $score = $strength['score'];
+    public function passwordTooWeak($username, $password)
+    {
+        $score = $this->zxcvbn->getPasswordScore($username, $password);
         return ($score < $this->config->minimum_password_strength);
     }
 }
