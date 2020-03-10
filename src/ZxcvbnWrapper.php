@@ -15,10 +15,33 @@ class ZxcvbnWrapper
 
     public function getPasswordScore($username, $password)
     {
+        $strength = $this->getPasswordStrength($username, $password);
+        return $strength['score'];
+    }
+
+    public function getPasswordStrength($username, $password)
+    {
         $user_data = [
             $username,
         ];
-        $strength = $this->zxcvbn->passwordStrength($password, $user_data);
-        return $strength['score'];
+        return $this->zxcvbn->passwordStrength($password, $user_data);
+    }
+
+    public function getPasswordHints($username, $password)
+    {
+        $strength = $this->getPasswordStrength($username, $password);
+        $feedback = $strength['feedback'];
+        $warning = $feedback['warning'];
+        $suggestions = $feedback['suggestions'];
+
+        if ($warning == '' && count($suggestions) == 0) {
+            return 'Password appears strong.';
+        }
+
+        $hints = ($warning == '' ? '' : $warning . '. ');
+        if (count($suggestions) > 0) {
+            $hints .= $suggestions[0];
+        }
+        return trim($hints);
     }
 }
