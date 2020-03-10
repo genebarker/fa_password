@@ -7,6 +7,8 @@ use PHPUnit\Framework\TestCase;
 
 class AuthenticatorTest extends TestCase
 {
+    const GOOD_NEW_PASSWORD = 'someNEWpassword!';
+
     private static $store;
     private static $authenticator;
 
@@ -137,9 +139,27 @@ class AuthenticatorTest extends TestCase
         );
     }
 
+    public function testLoginWithNewPasswordReturnsExpected()
+    {
+        $loginAttempt = $this->loginWithNewPassword('fmulder', 'scully');
+        $this->assertEquals(false, $loginAttempt->has_failed);
+    }
+
+    private function loginWithNewPassword(
+        $username,
+        $password,
+        $new_password = self::GOOD_NEW_PASSWORD
+    ) {
+        return self::$authenticator->login(
+            $username,
+            $password,
+            $new_password
+        );
+    }
+
     public function testLoginWithNewPasswordChangesIt()
     {
-        $new_password = 'someNEWpassword!';
+        $new_password = self::GOOD_NEW_PASSWORD;
         self::$authenticator->login('fmulder', 'scully', $new_password);
         $user = self::$store->getUserByUsername('fmulder');
         $this->assertTrue(password_verify($new_password, $user->pw_hash));
@@ -147,8 +167,7 @@ class AuthenticatorTest extends TestCase
 
     public function testLoginWithNewPasswordClearsNeedsPasswordFlag()
     {
-        $new_password = 'someNEWpassword!';
-        self::$authenticator->login('dscully', 'mulder', $new_password);
+        $this->loginWithNewPassword('dscully', 'mulder');
         $user = self::$store->getUserByUsername('dscully');
         $this->assertEquals(false, $user->needs_pw_change);
     }
