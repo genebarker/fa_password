@@ -158,6 +158,7 @@ class MySQLStore implements Datastore
         $key = [
             'login_fail_threshold_count',
             'login_fail_lock_minutes',
+            'minimum_password_strength',
         ];
         foreach ($key as $okey) {
             $sql = "SELECT val FROM 0_pwe_config WHERE okey = '$okey'";

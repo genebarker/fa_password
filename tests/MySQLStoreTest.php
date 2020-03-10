@@ -223,6 +223,10 @@ class MySQLStoreTest extends TestCase
             $config::DEFAULT_LOGIN_FAIL_LOCK_MINUTES,
             $config->login_fail_lock_minutes
         );
+        $this->assertEquals(
+            $config::DEFAULT_MINIMUM_PASSWORD_STRENGTH,
+            $config->minimum_password_strength
+        );
     }
 
     public function testGetUserReturnsUser()
