@@ -1,8 +1,12 @@
 <?php
 
+require_once(__DIR__ . '/autoload.php');
+
+use madman\Password\MySQLStore;
+use madman\Password\Authenticator;
+
 define('SS_PASSWORD', 181 << 8);
 
-// phpcs:disable
 class hooks_password extends hooks
 {
     var $module_name = 'password';
@@ -32,5 +36,16 @@ class hooks_password extends hooks
         );
         return array($security_areas, $security_sections);
     }
+
+    function authenticate($username, $password)
+    {
+        global $db;
+
+        $store = new MySQLStore();
+        $store->setConnection($db);
+        $auth = new Authenticator($store);
+        $loginAttempt = $auth->login($username, $password);
+
+        return !$loginAttempt->has_failed;
+    }
 }
-// phpcs:enable
