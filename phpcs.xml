@@ -2,11 +2,7 @@
 <ruleset name="PSR12">
     <description>PEAR standard sans file / doc comments.</description>
 
-    <file>autoload.php</file>
-    <file>hooks.php</file>
-    <file>src</file>
-    <file>tests</file>
-
+    <exclude-pattern>hooks.php</exclude-pattern>
     <exclude-pattern>/vendor/*</exclude-pattern>
 
     <rule ref="PSR12">
