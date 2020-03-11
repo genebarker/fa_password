@@ -162,7 +162,7 @@ class MySQLStore implements Datastore
         ];
         foreach ($key as $okey) {
             $sql = "SELECT val FROM 0_pwe_config WHERE okey = '$okey'";
-            $fail_message = "Could not config value ($okey).";
+            $fail_message = "Could not load config value ($okey).";
             $row = $this->doQueryAndGetRow($sql, $fail_message);
             $config->$okey = $row[0];
         }
