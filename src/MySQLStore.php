@@ -155,11 +155,7 @@ class MySQLStore implements Datastore
     public function getConfig()
     {
         $config = new Config();
-        $key = [
-            'login_fail_threshold_count',
-            'login_fail_lock_minutes',
-            'minimum_password_strength',
-        ];
+        $key = $this->getConfigKeys();
         foreach ($key as $okey) {
             $sql = "SELECT val FROM 0_pwe_config WHERE okey = '$okey'";
             $fail_message = "Could not load config value ($okey).";
@@ -169,8 +165,31 @@ class MySQLStore implements Datastore
         return $config;
     }
 
+    public function getConfigKeys()
+    {
+        return [
+            'login_fail_threshold_count',
+            'login_fail_lock_minutes',
+            'minimum_password_strength',
+        ];
+    }
+
     public function updateConfig($config)
     {
+        $key = $this->getConfigKeys();
+        foreach ($key as $okey) {
+            $sql = "UPDATE 0_pwe_config
+                    SET val = '%s'
+                    WHERE okey = '%s'
+            ";
+            $query = sprintf(
+                $sql,
+                mysql_real_escape_string($config->$okey),
+                $okey
+            );
+            $fail_message = "Could not update config value ($okey).";
+            $this->doQuery($query, $fail_message);
+        }
     }
 
     public function getUserByUsername($username)

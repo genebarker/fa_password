@@ -229,6 +229,17 @@ class MySQLStoreTest extends TestCase
         );
     }
 
+    public function testUpdateConfigUpdatesIt()
+    {
+        $config = new Config();
+        $config->login_fail_threshold_count = 2;
+        $config->login_fail_lock_minutes = 3;
+        $config->minimum_password_strength = 4;
+        self::$store->updateConfig($config);
+        $config2 = self::$store->getConfig();
+        $this->assertEquals($config, $config2);
+    }
+
     public function testGetUserReturnsUser()
     {
         $user = self::$store->getUserByUsername('dscully');
