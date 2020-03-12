@@ -37,7 +37,7 @@ class MySQLStoreTest extends TestCase
         $filename = self::MYSQL_REF_SCHEMA_FILE;
         $fail_message = 'Failed to build MySQL FA reference tables.';
         $store->executeSQLFromFile($filename, $fail_message);
-        $store->buildDatabaseSchema();
+        $store->addExtensionTables();
     }
 
     protected function setUp()
@@ -195,7 +195,7 @@ class MySQLStoreTest extends TestCase
 
     public function testBuildSchemaCreatesTables()
     {
-        self::$store->buildDatabaseSchema();
+        self::$store->addExtensionTables();
 
         $sql = "SELECT count(*)
                 FROM information_schema.tables

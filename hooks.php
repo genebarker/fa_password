@@ -44,7 +44,7 @@ class hooks_password extends hooks
         $store->setConnection($db);
         $store->startTransaction();
         try {
-            $store->buildDatabaseSchema();
+            $store->addExtensionTables();
         } catch (Exception $e) {
             $store->rollbackTransaction();
             return false;

@@ -23,7 +23,7 @@ class DatastoreTest extends TestCase
             'startTransaction',
             'commitTransaction',
             'rollbackTransaction',
-            'buildDatabaseSchema',
+            'addExtensionTables',
             'getConfig',
             'updateConfig',
             'getUserByUsername',

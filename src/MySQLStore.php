@@ -94,9 +94,9 @@ class MySQLStore implements Datastore
         $this->doQuery($sql, $fail_message);
     }
 
-    public function buildDatabaseSchema()
+    public function addExtensionTables()
     {
-        $fail_message = 'Failed to build MySQL password extension tables.';
+        $fail_message = 'Failed to add MySQL password extension tables.';
         $this->executeSQLFromFile(
             self::MYSQL_EXT_SCHEMA_FILE,
             $fail_message
