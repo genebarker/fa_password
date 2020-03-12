@@ -8,7 +8,7 @@ INSERT INTO 0_pwe_config (okey, val)
 VALUES
     ('login_fail_threshold_count', 3),
     ('login_fail_lock_minutes', 15),
-    ('minimum_password_strength', 3);
+    ('minimum_password_strength', 2);
 
 DROP TABLE IF EXISTS 0_pwe_user;
 CREATE TABLE 0_pwe_user (
