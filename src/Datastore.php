@@ -17,6 +17,7 @@ interface Datastore
     public function rollbackTransaction();
     public function buildDatabaseSchema();
     public function getConfig();
+    public function updateConfig($config);
     public function getUserByUsername($username);
     public function updateUser($user);
 }

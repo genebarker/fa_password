@@ -25,6 +25,7 @@ class DatastoreTest extends TestCase
             'rollbackTransaction',
             'buildDatabaseSchema',
             'getConfig',
+            'updateConfig',
             'getUserByUsername',
             'updateUser',
         );
