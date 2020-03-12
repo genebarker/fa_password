@@ -37,6 +37,22 @@ class hooks_password extends hooks
         return array($security_areas, $security_sections);
     }
 
+    function activate_extension($company, $check_only = true) {
+        global $db;
+    
+        $store = new MySQLStore();
+        $store->setConnection($db);
+        $store->startTransaction();
+        try {
+            $store->buildDatabaseSchema();
+        } catch (Exception $e) {
+            $store->rollbackTransaction();
+            return false;
+        }
+        $check_only ? $store->rollbackTransaction() : $store->commitTransaction();
+        return true;
+    }
+
     function authenticate($username, $password)
     {
         global $db;
