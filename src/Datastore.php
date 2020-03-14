@@ -16,6 +16,7 @@ interface Datastore
     public function commitTransaction();
     public function rollbackTransaction();
     public function addExtensionTables();
+    public function removeExtensionTables();
     public function getConfig();
     public function updateConfig($config);
     public function getUserByUsername($username);

@@ -176,6 +176,10 @@ class MySQLStore implements Datastore
         return (substr(trim($line), -1) == ';');
     }
 
+    public function removeExtensionTables()
+    {
+    }
+
     public function getConfig()
     {
         $config = new Config();

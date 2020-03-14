@@ -24,6 +24,7 @@ class DatastoreTest extends TestCase
             'commitTransaction',
             'rollbackTransaction',
             'addExtensionTables',
+            'removeExtensionTables',
             'getConfig',
             'updateConfig',
             'getUserByUsername',
