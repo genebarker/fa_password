@@ -7,7 +7,7 @@ use madman\Password\User;
 
 class MySQLStore implements Datastore
 {
-    const MYSQL_EXT_SCHEMA_FILE = __DIR__ . '/mysql_build_ext_schema.sql';
+    const MYSQL_EXT_BUILD_FILE = __DIR__ . '/mysql_build_ext_schema.sql';
     const MYSQL_EXT_REMOVE_FILE = __DIR__ . '/mysql_remove_ext_schema.sql';
     const MYSQL_TIMESTAMP_FORMAT = 'Y-m-d H:i:s';
 
@@ -123,7 +123,7 @@ class MySQLStore implements Datastore
     {
         $fail_message = 'Failed to add MySQL password extension tables.';
         $this->executeSQLFromFile(
-            self::MYSQL_EXT_SCHEMA_FILE,
+            self::MYSQL_EXT_BUILD_FILE,
             $fail_message
         );
     }
