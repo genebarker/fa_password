@@ -209,7 +209,7 @@ class MySQLStoreTest extends TestCase
         );
     }
 
-    public function testBuildSchemaCreatesTables()
+    public function testAddExtensionTablesAddsThem()
     {
         self::$store->addExtensionTables();
 
