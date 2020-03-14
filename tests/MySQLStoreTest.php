@@ -126,6 +126,22 @@ class MySQLStoreTest extends TestCase
         self::$store->doQuery($sql, $fail_message);
     }
 
+    public function testDoQueryHandlesDefaultFACompanyPrefix()
+    {
+        $sql = "SELECT * FROM 0_pwe_user";
+        self::$store->doQuery($sql);
+        $this->assertEquals($sql, self::$store->last_query);
+    }
+
+    public function testDoQueryHandlesAlternateFACompanyPrefix()
+    {
+        $store = new MySQLStore(21);
+        $store->setConnection(self::$store->conn);
+        $sql = "SELECT ' 0_pwe_user'";
+        $store->doQuery($sql);
+        $this->assertEquals("SELECT ' 21_pwe_user'", $store->last_query);
+    }
+
     public function testDoQueryAndGetRowThrowsWhenNoRow()
     {
         $sql = 'SELECT oid FROM 0_pwe_user WHERE oid = -999';

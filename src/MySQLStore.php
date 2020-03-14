@@ -10,8 +10,17 @@ class MySQLStore implements Datastore
     const MYSQL_EXT_SCHEMA_FILE = __DIR__ . '/mysql_build_ext_schema.sql';
     const MYSQL_TIMESTAMP_FORMAT = 'Y-m-d H:i:s';
 
-    public $conn = null;
+    public $company;
+    public $conn;
+    public $last_query;
 
+    public function __construct($company = 0)
+    {
+        $this->company = $company;
+        $this->conn = null;
+        $this->last_query = '';
+    }
+   
     public function openConnection(
         $host,
         $username,
@@ -56,14 +65,29 @@ class MySQLStore implements Datastore
         return mysql_fetch_row($result);
     }
 
-    public function doQuery($sql, $fail_message)
+    public function doQuery($sql, $fail_message = 'The query failed.')
     {
-        $trimmed_sql = Dedenter::dedent($sql);
-        $result = mysql_query($trimmed_sql, $this->conn);
+        $preparred_sql = $this->prepareSQLforSubmission($sql);
+        $this->last_query = $preparred_sql;
+        $result = mysql_query($preparred_sql, $this->conn);
         if (!$result) {
-            $this->throwDatabaseException($trimmed_sql, $fail_message);
+            $this->throwDatabaseException($preparred_sql, $fail_message);
         }
         return $result;
+    }
+
+    public function prepareSQLforSubmission($sql)
+    {
+        $sql_for_company = $this->applyCompanyTablePrefix($sql);
+        $tidy_sql = Dedenter::dedent($sql_for_company);
+        return $tidy_sql;
+    }
+
+    public function applyCompanyTablePrefix($sql)
+    {
+        $default_prefix = ' 0_';
+        $target_prefix = ' ' . $this->company . '_';
+        return str_replace($default_prefix, $target_prefix, $sql);
     }
 
     public function throwDatabaseException($sql, $error_message)
