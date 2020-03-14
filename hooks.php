@@ -40,7 +40,7 @@ class hooks_password extends hooks
     function activate_extension($company, $check_only = true) {
         global $db;
     
-        $store = new MySQLStore();
+        $store = new MySQLStore($company);
         $store->setConnection($db);
         $store->startTransaction();
         try {
@@ -57,7 +57,8 @@ class hooks_password extends hooks
     {
         global $db;
 
-        $store = new MySQLStore();
+        $company = $_SESSION['wa_current_user']->company;
+        $store = new MySQLStore($company);
         $store->setConnection($db);
         $auth = new Authenticator($store);
         $loginAttempt = $auth->login($username, $password);
