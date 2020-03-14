@@ -42,14 +42,30 @@ class hooks_password extends hooks
     
         $store = new MySQLStore($company);
         $store->setConnection($db);
-        $store->startTransaction();
-        try {
-            $store->addExtensionTables();
-        } catch (Exception $e) {
-            $store->rollbackTransaction();
-            return false;
+        if (!$check_only)
+        {
+            try {
+                $store->addExtensionTables();
+            } catch (Exception $e) {
+                return false;
+            }
         }
-        $check_only ? $store->rollbackTransaction() : $store->commitTransaction();
+        return true;
+    }
+
+    function deactivate_extension($company, $check_only = true) {
+        global $db;
+    
+        $store = new MySQLStore($company);
+        $store->setConnection($db);
+        if (!$check_only)
+        {
+            try {
+                $store->removeExtensionTables();
+            } catch (Exception $e) {
+                return false;
+            }
+        }
         return true;
     }
 
