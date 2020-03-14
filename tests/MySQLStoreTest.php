@@ -232,6 +232,18 @@ class MySQLStoreTest extends TestCase
         return $row[0];
     }
 
+    public function testRemoveExtensionTablesRemovesThem()
+    {
+        self::$store->removeExtensionTables();
+        $table_count = $this->getCountOfExtensionTables();
+        self::$store->addExtensionTables(); // put them back!
+        $this->assertEquals(
+            0,
+            $table_count,
+            'database still has some extension tables'
+        );
+    }
+
     public function testGetConfigReturnsConfig()
     {
         $config = self::$store->getConfig();

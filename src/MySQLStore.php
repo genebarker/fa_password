@@ -8,6 +8,7 @@ use madman\Password\User;
 class MySQLStore implements Datastore
 {
     const MYSQL_EXT_SCHEMA_FILE = __DIR__ . '/mysql_build_ext_schema.sql';
+    const MYSQL_EXT_REMOVE_FILE = __DIR__ . '/mysql_remove_ext_schema.sql';
     const MYSQL_TIMESTAMP_FORMAT = 'Y-m-d H:i:s';
 
     public $company;
@@ -178,6 +179,11 @@ class MySQLStore implements Datastore
 
     public function removeExtensionTables()
     {
+        $fail_message = 'Failed to remove MySQL password extension tables.';
+        $this->executeSQLFromFile(
+            self::MYSQL_EXT_REMOVE_FILE,
+            $fail_message
+        );
     }
 
     public function getConfig()
