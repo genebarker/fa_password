@@ -213,6 +213,15 @@ class MySQLStoreTest extends TestCase
     {
         self::$store->addExtensionTables();
 
+        $this->assertEquals(
+            2,
+            $this->getCountOfExtensionTables(),
+            'database missing expected tables'
+        );
+    }
+
+    private function getCountOfExtensionTables()
+    {
         $sql = "SELECT count(*)
                 FROM information_schema.tables
                 WHERE table_schema = schema()
@@ -220,11 +229,7 @@ class MySQLStoreTest extends TestCase
         ";
         $fail_message = "Could not get count of matching tables.";
         $row = self::$store->doQueryAndGetRow($sql, $fail_message);
-        $this->assertEquals(
-            2,
-            $row[0],
-            'database missing expected tables'
-        );
+        return $row[0];
     }
 
     public function testGetConfigReturnsConfig()
