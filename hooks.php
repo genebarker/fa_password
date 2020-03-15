@@ -78,7 +78,14 @@ class hooks_password extends hooks
         $store = new MySQLStore($company);
         $store->setConnection($db);
         $auth = new Authenticator($store);
-        $loginAttempt = $auth->login($username, $password);
+        if (is_array($password)) {
+            $curr_password = $password[0];
+            $new_password = $password[1];
+        } else {
+            $curr_password = $password;
+            $new_password = null;
+        }
+        $loginAttempt = $auth->login($username, $curr_password, $new_password);
         $this->lastLoginAttempt = $loginAttempt;
 
         return !$loginAttempt->has_failed;
