@@ -136,7 +136,8 @@ class AuthenticatorTest extends TestCase
         $user->last_pw_fail_time = $fail_time;
         self::$store->updateUser($user);
         $loginAttempt = self::$authenticator->login('fmulder', 'scully');
-        $this->assertEquals(false, $loginAttempt->has_failed);
+        $user_after = self::$store->getUserByUsername('fmulder');
+        $this->assertEquals(false, $user_after->is_locked);
     }
 
     public function testFailsWhenNeedsPasswordChange()

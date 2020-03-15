@@ -81,6 +81,7 @@ class Authenticator
             return new LoginAttempt($has_failed, $message);
         }
 
+        $user->is_locked = false;
         $user->ongoing_pw_fail_count = 0;
         $this->store->updateUser($user);
         $has_failed = false;
