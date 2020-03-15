@@ -10,6 +10,7 @@ define('SS_PASSWORD', 181 << 8);
 class hooks_password extends hooks
 {
     var $module_name = 'password';
+    public $lastLoginAttempt = null;
 
     function install_options($app)
     {
@@ -78,6 +79,7 @@ class hooks_password extends hooks
         $store->setConnection($db);
         $auth = new Authenticator($store);
         $loginAttempt = $auth->login($username, $password);
+        $this->lastLoginAttempt = $loginAttempt;
 
         return !$loginAttempt->has_failed;
     }
