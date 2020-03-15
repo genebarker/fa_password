@@ -6,6 +6,22 @@ use DateInterval;
 
 class Authenticator
 {
+    const UNKNOWN_USERNAME_MSG = (
+        'This account does not exist. Please enter a different username ' .
+        'or contact your system administrator.'
+    );
+    const BAD_PASSWORD_MSG = (
+        'The password for this account is incorrect.'
+    );
+    const ACCOUNT_LOCKED_MSG = (
+        'This account is locked. Please wait a while then try again or ' .
+        'contact your system administrator.'
+    );
+    const PASSWORD_EXPIRED_MSG = (
+        'The password for this account expired. Please provide a new one ' .
+        'using the new password option on the login screen.'
+    );
+
     public $store;
     public $config;
     public $zxcvbn;
@@ -22,10 +38,14 @@ class Authenticator
         try {
             $user = $this->store->getUserByUsername($username);
         } catch (\Exception $e) {
-            return new LoginAttempt();
+            $has_failed = true;
+            $message = self::UNKNOWN_USERNAME_MSG;
+            return new LoginAttempt($has_failed, $message);
         }
         if ($user->is_locked && $this->tooSoonToTryAgain($user)) {
-            return new LoginAttempt();
+            $has_failed = true;
+            $message = self::ACCOUNT_LOCKED_MSG;
+            return new LoginAttempt($has_failed, $message);
         }
         if (!password_verify($password, $user->pw_hash)) {
             $user->ongoing_pw_fail_count++;
@@ -37,7 +57,9 @@ class Authenticator
                 $user->is_locked = true;
             }
             $this->store->updateUser($user);
-            return new LoginAttempt();
+            $has_failed = true;
+            $message = self::BAD_PASSWORD_MSG;
+            return new LoginAttempt($has_failed, $message);
         }
 
         if ($new_password != null) {
@@ -55,7 +77,7 @@ class Authenticator
 
         if ($user->needs_pw_change) {
             $has_failed = true;
-            $message = 'You must use the new password option to login.';
+            $message = self::PASSWORD_EXPIRED_MSG;
             return new LoginAttempt($has_failed, $message);
         }
 

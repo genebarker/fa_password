@@ -39,6 +39,11 @@ class AuthenticatorTest extends TestCase
             'some_password'
         );
         $this->assertTrue($loginAttempt->has_failed);
+        $this->assertEquals(
+            'This account does not exist. Please enter a different ' .
+            'username or contact your system administrator.',
+            $loginAttempt->message
+        );
     }
 
     public function testGoodUserSucceeds()
@@ -63,7 +68,7 @@ class AuthenticatorTest extends TestCase
         $loginAttempt = self::$authenticator->login('fmulder', 'wrong_pw');
         $this->assertEquals(true, $loginAttempt->has_failed);
         $this->assertEquals(
-            'Login attempt failed.',
+            'The password for this account is incorrect.',
             $loginAttempt->message
         );
     }
@@ -114,6 +119,11 @@ class AuthenticatorTest extends TestCase
         $this->triggerLockForUser('fmulder');
         $loginAttempt = self::$authenticator->login('fmulder', 'scully');
         $this->assertEquals(true, $loginAttempt->has_failed);
+        $this->assertEquals(
+            'This account is locked. Please wait a while then try again ' .
+            'or contact your system administrator.',
+            $loginAttempt->message
+        );
     }
 
     public function testLockResetsAfterSetTime()
@@ -134,7 +144,8 @@ class AuthenticatorTest extends TestCase
         $loginAttempt = self::$authenticator->login('dscully', 'mulder');
         $this->assertEquals(true, $loginAttempt->has_failed);
         $this->assertEquals(
-            'You must use the new password option to login.',
+            'The password for this account expired. Please provide a new ' .
+            'one using the new password option on the login screen.',
             $loginAttempt->message
         );
     }
