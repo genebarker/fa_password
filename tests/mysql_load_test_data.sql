@@ -5,7 +5,8 @@ INSERT INTO 0_users (
 )
 VALUES
     (101, 'fmulder', 'a3aab32ace277bdf141f92c1e68f6cef'),
-    (102, 'dscully', '71720c4911b0c34c25ed4b3aa188bdb8');
+    (102, 'dscully', '71720c4911b0c34c25ed4b3aa188bdb8'),
+    (103, 'skinner', '5cc224100427d254d62b1fe5fc7883b3');
 
 DELETE FROM 0_pwe_user;
 INSERT INTO 0_pwe_user (

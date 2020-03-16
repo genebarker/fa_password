@@ -318,6 +318,11 @@ class MySQLStore implements Datastore
 
     public function userExists($username)
     {
-        return false;
+        $sql = "SELECT count(*) FROM 0_users WHERE user_id = '%s'";
+        $query = sprintf($sql, mysql_real_escape_string($username));
+        $fail_message = "Could not check if user exists " .
+                        "(username=$username).";
+        $row = $this->doQueryAndGetRow($query, $fail_message);
+        return ($row[0] == 1);
     }
 }
