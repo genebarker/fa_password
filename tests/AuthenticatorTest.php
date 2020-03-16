@@ -212,6 +212,11 @@ class AuthenticatorTest extends TestCase
             'scully',
             $weak_new_password
         );
+        $this->assertNewPasswordTooWeakResult($loginAttempt);
+    }
+
+    public function assertNewPasswordTooWeakResult($loginAttempt)
+    {
         $this->assertEquals(true, $loginAttempt->has_failed);
         $this->assertStringStartsWith(
             'New password is too weak.',
@@ -245,5 +250,16 @@ class AuthenticatorTest extends TestCase
     {
         $loginAttempt = self::$authenticator->login('skinner', 'wrong!');
         $this->assertBadPasswordResult($loginAttempt);
+    }
+
+    public function testLoginWithUnmigratedUserWithWeakNewPassword()
+    {
+        $weak_new_password = 'password';
+        $loginAttempt = self::$authenticator->login(
+            'skinner',
+            'smoking',
+            $weak_new_password
+        );
+        $this->assertNewPasswordTooWeakResult($loginAttempt);
     }
 }

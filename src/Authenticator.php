@@ -6,6 +6,9 @@ use DateInterval;
 
 class Authenticator
 {
+    const UNEXPECTED_ERROR_MSG = (
+        'An unexpected error occurred while processing login attempt.'
+    );
     const UNKNOWN_USERNAME_MSG = (
         'This account does not exist. Please enter a different username ' .
         'or contact your system administrator.'
@@ -39,7 +42,12 @@ class Authenticator
             return $this->processLogin($username, $password, $new_password);
         } catch (\Exception $e) {
             $has_failed = true;
-            $message = self::UNKNOWN_ERROR_MSG;
+            $message = (
+                self::UNEXPECTED_ERROR_MSG .
+                " Username: $username." .
+                " Cause: " . $e->getMessage()
+            );
+            error_log($message);
             return new LoginAttempt($has_failed, $message);
         }
     }
@@ -77,9 +85,9 @@ class Authenticator
         if ($new_password != null) {
             if ($this->passwordTooWeak($username, $new_password)) {
                 $has_failed = true;
-                $message = trim(
-                    'New password is too weak. ' .
-                    $this->zxcvbn->getPasswordHints($username, $new_password)
+                $message = $this->createPasswordTooWeakMessage(
+                    $username,
+                    $new_password
                 );
                 return new LoginAttempt($has_failed, $message);
             }
@@ -126,7 +134,7 @@ class Authenticator
         return $this->getUser('getBaseUserByUsername', $username);
     }
 
-    private function processNewUserLogin($username, $password, $new_pass)
+    private function processNewUserLogin($username, $password, $new_password)
     {
         $user = $this->getBaseUser($username);
         if ($user == null) {
@@ -139,9 +147,19 @@ class Authenticator
             $message = self::BAD_PASSWORD_MSG;
             return new LoginAttempt($has_failed, $message);
         }
-        $has_failed = true;
-        $message = self::PASSWORD_EXPIRED_MSG;
-        return new LoginAttempt($has_failed, $message);
+        if ($new_password == null) {
+            $has_failed = true;
+            $message = self::PASSWORD_EXPIRED_MSG;
+            return new LoginAttempt($has_failed, $message);
+        }
+        if ($this->passwordTooWeak($username, $new_password)) {
+            $has_failed = true;
+            $message = $this->createPasswordTooWeakMessage(
+                $username,
+                $new_password
+            );
+            return new LoginAttempt($has_failed, $message);
+        }
     }
     
     public function tooSoonToTryAgain($user)
@@ -159,5 +177,13 @@ class Authenticator
     {
         $score = $this->zxcvbn->getPasswordScore($username, $password);
         return ($score < $this->config->minimum_password_strength);
+    }
+
+    private function createPasswordTooWeakMessage($username, $password)
+    {
+        return trim(
+            'New password is too weak. ' .
+            $this->zxcvbn->getPasswordHints($username, $password)
+        );
     }
 }
