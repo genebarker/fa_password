@@ -303,6 +303,18 @@ class MySQLStoreTest extends TestCase
         self::$store->getUserByUsername('UNKNOWN');
     }
 
+    public function testGetBaseUserReturnsUser()
+    {
+        $user = self::$store->getBaseUserByUsername('skinner');
+        $this->assertTrue($user instanceof User);
+        $this->assertEquals(103, $user->oid);
+        $this->assertEquals('skinner', $user->username);
+        $this->assertEquals(
+            '5cc224100427d254d62b1fe5fc7883b3',
+            $user->fa_pw_hash
+        );
+    }
+
     public function testUpdateUserUpdatesUser()
     {
         $user = self::$store->getUserByUsername('fmulder');

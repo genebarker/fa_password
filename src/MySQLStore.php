@@ -262,6 +262,17 @@ class MySQLStore implements Datastore
 
     public function getBaseUserByUsername($username)
     {
+        $sql = "SELECT id, user_id, password
+                FROM 0_users
+                WHERE user_id = '%s'
+        ";
+        $query = sprintf($sql, mysql_real_escape_string($username));
+        $fail_message = "Could not get FA user (username=$username).";
+        $row = $this->doQueryAndGetRow($query, $fail_message);
+
+        $user = new User($row[0], $row[1]);
+        $user->fa_pw_hash = $row[2];
+        return $user;
     }
 
     public function updateUser($user)
