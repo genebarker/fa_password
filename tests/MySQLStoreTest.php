@@ -343,4 +343,12 @@ class MySQLStoreTest extends TestCase
         );
         self::$store->updateUser($user);
     }
+
+    public function testInsertUserInsertsHim()
+    {
+        $user_before = UserTest::createTestUser(104, 'doggett');
+        self::$store->insertUser($user_before);
+        $user_after = self::$store->getUserByUsername('doggett');
+        $this->assertEquals($user_before, $user_after);
+    }
 }

@@ -333,5 +333,11 @@ class MySQLStore implements Datastore
 
     public function insertUser($user)
     {
+        $sql = "INSERT INTO 0_pwe_user (oid) VALUES (%d);";
+        $query = sprintf($sql, $user->oid);
+        $fail_message = "Could not insert user (oid={$user->oid}, " .
+                        "username={$user->username}).";
+        $this->doQuery($query, $fail_message);
+        $this->updateUser($user);
     }
 }
