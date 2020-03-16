@@ -39,7 +39,10 @@ class Authenticator
             $user = $this->store->getUserByUsername($username);
         } catch (\Exception $e) {
             $has_failed = true;
-            $message = self::UNKNOWN_USERNAME_MSG;
+            $message = (
+                $this->store->userExists($username) ?
+                self::PASSWORD_EXPIRED_MSG : self::UNKNOWN_USERNAME_MSG
+            );
             return new LoginAttempt($has_failed, $message);
         }
         if ($user->is_locked && $this->tooSoonToTryAgain($user)) {

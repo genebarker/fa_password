@@ -143,6 +143,11 @@ class AuthenticatorTest extends TestCase
     public function testFailsWhenNeedsPasswordChange()
     {
         $loginAttempt = self::$authenticator->login('dscully', 'mulder');
+        $this->assertPasswordExpiredResult($loginAttempt);
+    }
+
+    private function assertPasswordExpiredResult($loginAttempt)
+    {
         $this->assertEquals(true, $loginAttempt->has_failed);
         $this->assertEquals(
             'The password for this account expired. Please provide a new ' .
@@ -223,5 +228,11 @@ class AuthenticatorTest extends TestCase
             'New password is too weak. ' . $password_hints,
             $loginAttempt->message
         );
+    }
+
+    public function testLoginWithUnmigratedUserGetsPasswordExpiredFailure()
+    {
+        $loginAttempt = self::$authenticator->login('skinner', 'smoking');
+        $this->assertPasswordExpiredResult($loginAttempt);
     }
 }
