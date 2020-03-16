@@ -260,6 +260,10 @@ class MySQLStore implements Datastore
         return $php_date;
     }
 
+    public function getBaseUserByUsername($username)
+    {
+    }
+
     public function updateUser($user)
     {
         $sql = "UPDATE 0_pwe_user

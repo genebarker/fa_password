@@ -28,6 +28,7 @@ class DatastoreTest extends TestCase
             'getConfig',
             'updateConfig',
             'getUserByUsername',
+            'getBaseUserByUsername',
             'updateUser',
             'userExists',
         );
