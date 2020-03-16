@@ -21,4 +21,5 @@ interface Datastore
     public function updateConfig($config);
     public function getUserByUsername($username);
     public function updateUser($user);
+    public function userExists($username);
 }

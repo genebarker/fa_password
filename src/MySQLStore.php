@@ -315,4 +315,9 @@ class MySQLStore implements Datastore
         preg_match('/Rows matched: (\d+)/', $info, $regex_match);
         return $regex_match[1];
     }
+
+    public function userExists($username)
+    {
+        return false;
+    }
 }
