@@ -8,6 +8,7 @@ class User
     {
         $this->oid = $oid;
         $this->username = $username;
+        $this->fa_pw_hash = null;
 
         $this->pw_hash = null;
         $this->needs_pw_change = false;

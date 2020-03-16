@@ -15,6 +15,7 @@ class UserTest extends TestCase
         $user = new User($oid, $username);
         $this->assertEquals($oid, $user->oid);
         $this->assertEquals($username, $user->username);
+        $this->assertEquals(null, $user->fa_pw_hash);
         $this->assertEquals(null, $user->pw_hash);
         $this->assertEquals(false, $user->needs_pw_change);
         $this->assertEquals(false, $user->is_locked);
@@ -33,7 +34,9 @@ class UserTest extends TestCase
     {
         $oid = 26;
         $username = 'kobe';
-        $pw_hash = ( // password = 'bryant'
+        // password = 'bryant'
+        $fa_pw_hash = 'e5b79bbdb797144a4cbf576aef22f492';
+        $pw_hash = (
             '$2y$10$dxUH1PYc7dQpjBf5l2jfxO9Ce5M97m11ZIpP5IsjvfhdWBcPhWg/u'
         );
         $user = new User($oid, $username);
