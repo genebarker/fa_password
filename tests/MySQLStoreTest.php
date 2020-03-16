@@ -343,14 +343,4 @@ class MySQLStoreTest extends TestCase
         );
         self::$store->updateUser($user);
     }
-
-    public function testUserExistsTrueWhenDoes()
-    {
-        $this->assertEquals(true, self::$store->userExists('fmulder'));
-    }
-
-    public function testUserExistsFalseWhenDoesnt()
-    {
-        $this->assertEquals(false, self::$store->userExists('unknown'));
-    }
 }

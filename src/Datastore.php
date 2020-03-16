@@ -22,5 +22,4 @@ interface Datastore
     public function getUserByUsername($username);
     public function getBaseUserByUsername($username);
     public function updateUser($user);
-    public function userExists($username);
 }
