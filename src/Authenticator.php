@@ -71,6 +71,7 @@ class Authenticator
                 );
                 return new LoginAttempt($has_failed, $message);
             }
+            $user->fa_pw_hash = md5($new_password);
             $user->pw_hash = password_hash($new_password, PASSWORD_DEFAULT);
             $user->needs_pw_change = false;
         }

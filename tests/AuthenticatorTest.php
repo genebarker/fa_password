@@ -184,6 +184,16 @@ class AuthenticatorTest extends TestCase
         $this->assertEquals(false, $user->needs_pw_change);
     }
 
+    public function testLoginWithNewPasswordChangesFAPasswordToo()
+    {
+        $this->loginWithNewPassword('dscully', 'mulder');
+        $user = self::$store->getUserByUsername('dscully');
+        $this->assertEquals(
+            md5(self::GOOD_NEW_PASSWORD),
+            $user->fa_pw_hash
+        );
+    }
+
     public function testLoginWithNewPasswordFailsWhenTooWeak()
     {
         $weak_new_password = 'password';
