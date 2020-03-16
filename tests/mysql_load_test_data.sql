@@ -1,4 +1,5 @@
 -- insert default data expected by tests
+-- (passwords in order: scully, mulder, smoking, marine)
 DELETE FROM 0_users;
 INSERT INTO 0_users (
     id, user_id, password
@@ -6,7 +7,8 @@ INSERT INTO 0_users (
 VALUES
     (101, 'fmulder', 'a3aab32ace277bdf141f92c1e68f6cef'),
     (102, 'dscully', '71720c4911b0c34c25ed4b3aa188bdb8'),
-    (103, 'skinner', '5cc224100427d254d62b1fe5fc7883b3');
+    (103, 'skinner', '5cc224100427d254d62b1fe5fc7883b3'),
+    (104, 'doggett', 'b329f324cc17d6221a385ea1afb3a289');
 
 DELETE FROM 0_pwe_user;
 INSERT INTO 0_pwe_user (
