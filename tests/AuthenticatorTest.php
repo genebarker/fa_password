@@ -66,6 +66,11 @@ class AuthenticatorTest extends TestCase
     public function testGoodUserBadPassFails()
     {
         $loginAttempt = self::$authenticator->login('fmulder', 'wrong_pw');
+        $this->assertBadPasswordResult($loginAttempt);
+    }
+
+    private function assertBadPasswordResult($loginAttempt)
+    {
         $this->assertEquals(true, $loginAttempt->has_failed);
         $this->assertEquals(
             'The password for this account is incorrect.',
@@ -234,5 +239,11 @@ class AuthenticatorTest extends TestCase
     {
         $loginAttempt = self::$authenticator->login('skinner', 'smoking');
         $this->assertPasswordExpiredResult($loginAttempt);
+    }
+
+    public function testLoginWithUnmigratedAndBadPassGetsBadPassFailure()
+    {
+        $loginAttempt = self::$authenticator->login('skinner', 'wrong!');
+        $this->assertBadPasswordResult($loginAttempt);
     }
 }

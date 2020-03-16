@@ -36,14 +36,23 @@ class Authenticator
     public function login($username, $password, $new_password = null)
     {
         try {
-            $user = $this->store->getUserByUsername($username);
+            return $this->processLogin($username, $password, $new_password);
         } catch (\Exception $e) {
             $has_failed = true;
-            $message = (
-                $this->store->userExists($username) ?
-                self::PASSWORD_EXPIRED_MSG : self::UNKNOWN_USERNAME_MSG
-            );
+            $message = self::UNKNOWN_ERROR_MSG;
             return new LoginAttempt($has_failed, $message);
+        }
+    }
+
+    public function processLogin($username, $password, $new_password)
+    {
+        $user = $this->getExtendedUser($username);
+        if ($user == null) {
+            return $this->processNewUserLogin(
+                $username,
+                $password,
+                $new_password
+            );
         }
         if ($user->is_locked && $this->tooSoonToTryAgain($user)) {
             $has_failed = true;
@@ -93,6 +102,48 @@ class Authenticator
         return new LoginAttempt($has_failed, $message);
     }
 
+    private function getExtendedUser($username)
+    {
+        return $this->getUser('getUserByUsername', $username);
+    }
+
+    private function getUser($method_name, $username)
+    {
+        try {
+            $method_call = array($this->store, $method_name);
+            $user = call_user_func($method_call, $username);
+        } catch (\Exception $e) {
+            if ($e->getCode() != Datastore::NO_MATCHING_ROW_FOUND) {
+                throw $e;
+            }
+            $user = null;
+        }
+        return $user;
+    }
+
+    private function getBaseUser($username)
+    {
+        return $this->getUser('getBaseUserByUsername', $username);
+    }
+
+    private function processNewUserLogin($username, $password, $new_pass)
+    {
+        $user = $this->getBaseUser($username);
+        if ($user == null) {
+            $has_failed = true;
+            $message = self::UNKNOWN_USERNAME_MSG;
+            return new LoginAttempt($has_failed, $message);
+        }
+        if (md5($password) != $user->fa_pw_hash) {
+            $has_failed = true;
+            $message = self::BAD_PASSWORD_MSG;
+            return new LoginAttempt($has_failed, $message);
+        }
+        $has_failed = true;
+        $message = self::PASSWORD_EXPIRED_MSG;
+        return new LoginAttempt($has_failed, $message);
+    }
+    
     public function tooSoonToTryAgain($user)
     {
         $lock_length = new DateInterval(
