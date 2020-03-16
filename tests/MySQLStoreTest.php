@@ -306,6 +306,7 @@ class MySQLStoreTest extends TestCase
     public function testUpdateUserUpdatesUser()
     {
         $user = self::$store->getUserByUsername('fmulder');
+        $user->fa_pw_hash = 'different';
         $user->pw_hash = 'different';
         $user->needs_pw_change = true;
         $user->is_locked = true;

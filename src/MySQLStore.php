@@ -282,6 +282,16 @@ class MySQLStore implements Datastore
         $fail_message = "Could not update user (oid={$user->oid}, " .
                         "username={$user->username}).";
         $this->doUpdateQuery($query, $fail_message);
+        $sql = "UPDATE 0_users
+                SET password = '%s'
+                WHERE id = %d
+        ";
+        $query = sprintf(
+            $sql,
+            mysql_real_escape_string($user->fa_pw_hash),
+            $user->oid
+        );
+        $this->doUpdateQuery($query, $fail_message);
     }
 
     public static function convertToSQLTimestamp($php_date)
