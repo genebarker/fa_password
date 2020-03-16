@@ -30,16 +30,15 @@ class UserTest extends TestCase
         $this->assertEquals($user_one, $user_two);
     }
 
-    public static function createTestUser()
+    public static function createTestUser($oid = 26, $username = 'kobe')
     {
-        $oid = 26;
-        $username = 'kobe';
         // password = 'bryant'
         $fa_pw_hash = 'e5b79bbdb797144a4cbf576aef22f492';
         $pw_hash = (
             '$2y$10$dxUH1PYc7dQpjBf5l2jfxO9Ce5M97m11ZIpP5IsjvfhdWBcPhWg/u'
         );
         $user = new User($oid, $username);
+        $user->fa_pw_hash = $fa_pw_hash;
         $user->pw_hash = $pw_hash;
         $user->needs_pw_change = true;
         $user->is_locked = true;
