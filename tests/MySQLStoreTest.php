@@ -280,6 +280,10 @@ class MySQLStoreTest extends TestCase
         $this->assertEquals(102, $user->oid);
         $this->assertEquals('dscully', $user->username);
         $this->assertEquals(
+            '71720c4911b0c34c25ed4b3aa188bdb8',
+            $user->fa_pw_hash
+        );
+        $this->assertEquals(
             '$2y$10$vra/wVFQUZHlOaVYIqPew.SbYCmTJDdKmOXHPdq038d6z08xSe.4G',
             $user->pw_hash
         );
