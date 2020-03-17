@@ -181,10 +181,24 @@ class AuthenticatorTest extends TestCase
 
     public function testLoginWithNewPasswordChangesIt()
     {
-        $new_password = self::GOOD_NEW_PASSWORD;
-        self::$authenticator->login('fmulder', 'scully', $new_password);
+        $this->loginWithNewPassword('fmulder', 'scully');
         $user = self::$store->getUserByUsername('fmulder');
-        $this->assertTrue(password_verify($new_password, $user->pw_hash));
+        $this->assertTrue(
+            password_verify(self::GOOD_NEW_PASSWORD, $user->pw_hash)
+        );
+    }
+
+    public function testLoginWithNewPasswordAddsItToHistory()
+    {
+        $this->loginWithNewPassword('fmulder', 'scully');
+        $history = self::$store->getPasswordHistory(101);
+        $this->assertTrue(
+            password_verify(self::GOOD_NEW_PASSWORD, $history[3]['pw_hash'])
+        );
+        $this->assertEquals(
+            date('Y-m-d'),
+            date_format($history[3]['dob'], 'Y-m-d')
+        );
     }
 
     public function testLoginWithNewPasswordClearsNeedsPasswordFlag()
