@@ -214,7 +214,7 @@ class MySQLStoreTest extends TestCase
         self::$store->addExtensionTables();
 
         $this->assertEquals(
-            2,
+            3,
             $this->getCountOfExtensionTables(),
             'database missing expected tables'
         );
@@ -225,7 +225,8 @@ class MySQLStoreTest extends TestCase
         $sql = "SELECT count(*)
                 FROM information_schema.tables
                 WHERE table_schema = schema()
-                    AND table_name IN ('0_pwe_user', '0_pwe_config');
+                    AND table_name IN ('0_pwe_user', '0_pwe_config',
+                        '0_pwe_history')
         ";
         $fail_message = "Could not get count of matching tables.";
         $row = self::$store->doQueryAndGetRow($sql, $fail_message);

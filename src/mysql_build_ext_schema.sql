@@ -19,3 +19,10 @@ CREATE TABLE 0_pwe_user (
     ongoing_pw_fail_count integer,
     last_pw_fail_time timestamp
 );
+
+DROP TABLE IF EXISTS 0_pwe_history;
+CREATE TABLE 0_pwe_history (
+    oid integer PRIMARY KEY,
+    pw_hash varchar(128),
+    dob date
+);
