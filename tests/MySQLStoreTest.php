@@ -274,6 +274,7 @@ class MySQLStoreTest extends TestCase
         $config->login_fail_lock_minutes = 3;
         $config->minimum_password_strength = 4;
         $config->maximum_password_age_days = 5;
+        $config->password_history_count = 6;
         self::$store->updateConfig($config);
         $config2 = self::$store->getConfig();
         $this->assertEquals($config, $config2);
