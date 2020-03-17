@@ -205,6 +205,7 @@ class MySQLStore implements Datastore
             'login_fail_threshold_count',
             'login_fail_lock_minutes',
             'minimum_password_strength',
+            'maximum_password_age_days',
         ];
     }
 

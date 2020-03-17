@@ -261,6 +261,10 @@ class MySQLStoreTest extends TestCase
             $config::DEFAULT_MINIMUM_PASSWORD_STRENGTH,
             $config->minimum_password_strength
         );
+        $this->assertEquals(
+            $config::DEFAULT_MAXIMUM_PASSWORD_AGE_DAYS,
+            $config->maximum_password_age_days
+        );
     }
 
     public function testUpdateConfigUpdatesIt()
@@ -269,6 +273,7 @@ class MySQLStoreTest extends TestCase
         $config->login_fail_threshold_count = 2;
         $config->login_fail_lock_minutes = 3;
         $config->minimum_password_strength = 4;
+        $config->maximum_password_age_days = 5;
         self::$store->updateConfig($config);
         $config2 = self::$store->getConfig();
         $this->assertEquals($config, $config2);
