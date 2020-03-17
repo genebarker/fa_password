@@ -50,10 +50,22 @@ function render_password_setup_form($pw_config)
         "guessable and 4 is very unguessable."
     );
     ref_row_with_note(
+        'maximum_password_age_days',
+        $pw_config->maximum_password_age_days,
+        "Requires password change when its age in days exceeds this."
+    );
+    ref_row_with_note(
+        'password_history_count',
+        $pw_config->password_history_count,
+        "New passwords must be different than those found in a user's " .
+        "password history."
+    );
+    ref_row_with_note(
         'login_fail_threshold_count',
         $pw_config->login_fail_threshold_count,
-        "Account locks after consecutive password failures exceed this. Keep " .
-        "this less than FA's \$login_max_attempts ($login_max_attempts)."
+        "Account locks after consecutive password failures exceed this. " .
+        "Keep this less than FA's \$login_max_attempts " .
+        "($login_max_attempts)."
     );
     ref_row_with_note(
         'login_fail_lock_minutes',
