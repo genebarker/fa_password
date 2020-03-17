@@ -370,5 +370,13 @@ class MySQLStore implements Datastore
 
     public function addPasswordToHistory($user_oid, $pw_hash)
     {
+        $sql = "INSERT INTO 0_pwe_history (user_oid, pw_hash, dob)
+                VALUES (%d, '%s', '%s')
+        ";
+        $now = self::convertToSQLTimestamp(date_create('now'));
+        $query = sprintf($sql, $user_oid, $pw_hash, $now);
+        $fail_message = "Could not add to user's password history " .
+                        "(user_oid={$user_oid}).";
+        $this->doQuery($query, $fail_message);
     }
 }

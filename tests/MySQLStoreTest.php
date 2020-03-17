@@ -378,4 +378,17 @@ class MySQLStoreTest extends TestCase
             date_format($pw_3['dob'], 'Y-m-d')
         );
     }
+
+    public function testAddPasswordToHistoryAddsIt()
+    {
+        $pw_hash = password_hash('noway', PASSWORD_DEFAULT);
+        self::$store->addPasswordToHistory(102, $pw_hash);
+        $history = self::$store->getPasswordHistory(102);
+        $new_one = $history[1];
+        $this->assertTrue(password_verify('noway', $new_one['pw_hash']));
+        $this->assertEquals(
+            date('Y-m-d'),
+            date_format($new_one['dob'], 'Y-m-d')
+        );
+    }
 }
