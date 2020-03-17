@@ -345,4 +345,9 @@ class MySQLStore implements Datastore
         $this->doQuery($query, $fail_message);
         $this->updateUser($user);
     }
+
+    public function getPasswordHistory($oid)
+    {
+        return array();
+    }
 }

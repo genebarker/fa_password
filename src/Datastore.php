@@ -23,4 +23,5 @@ interface Datastore
     public function getBaseUserByUsername($username);
     public function updateUser($user);
     public function insertUser($user);
+    public function getPasswordHistory($oid);
 }
