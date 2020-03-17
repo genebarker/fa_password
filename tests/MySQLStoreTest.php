@@ -332,6 +332,15 @@ class MySQLStoreTest extends TestCase
         $this->assertEquals($user, $user_after);
     }
 
+    public function testUpdateUserHandlesNullDates()
+    {
+        $user_before = self::$store->getUserByUsername('fmulder');
+        $user_before->last_pw_fail_time = null;
+        self::$store->updateUser($user_before);
+        $user_after = self::$store->getUserByUsername('fmulder');
+        $this->assertEquals($user_before, $user_after);
+    }
+
     public function testUpdateUserThrowsOnError()
     {
         $user = self::$store->getUserByUsername('fmulder');

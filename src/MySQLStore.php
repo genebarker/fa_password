@@ -282,7 +282,7 @@ class MySQLStore implements Datastore
                     needs_pw_change = %b,
                     is_locked = %b,
                     ongoing_pw_fail_count = %d,
-                    last_pw_fail_time = '%s'
+                    last_pw_fail_time = %s
                 WHERE oid = %d
         ";
         $query = sprintf(
@@ -291,7 +291,10 @@ class MySQLStore implements Datastore
             $user->needs_pw_change,
             $user->is_locked,
             $user->ongoing_pw_fail_count,
-            self::convertToSQLTimestamp($user->last_pw_fail_time),
+            (
+                $user->last_pw_fail_time == null ? 'null' : "'" .
+                self::convertToSQLTimestamp($user->last_pw_fail_time) . "'"
+            ),
             $user->oid
         );
         $fail_message = "Could not update user (oid={$user->oid}, " .
