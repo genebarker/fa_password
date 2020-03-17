@@ -367,4 +367,8 @@ class MySQLStore implements Datastore
         }
         return $history;
     }
+
+    public function addPasswordToHistory($user_oid, $pw_hash)
+    {
+    }
 }

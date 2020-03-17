@@ -32,6 +32,7 @@ class DatastoreTest extends TestCase
             'updateUser',
             'insertUser',
             'getPasswordHistory',
+            'addPasswordToHistory',
         );
 
         $reflection = new \ReflectionClass('madman\Password\Datastore');

@@ -23,5 +23,6 @@ interface Datastore
     public function getBaseUserByUsername($username);
     public function updateUser($user);
     public function insertUser($user);
-    public function getPasswordHistory($oid);
+    public function getPasswordHistory($user_oid);
+    public function addPasswordToHistory($user_oid, $pw_hash);
 }
