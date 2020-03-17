@@ -346,22 +346,23 @@ class MySQLStore implements Datastore
         $this->updateUser($user);
     }
 
-    public function getPasswordHistory($oid)
+    public function getPasswordHistory($user_oid)
     {
-        $sql = "SELECT pw_hash, dob
+        $sql = "SELECT oid, pw_hash, dob
                 FROM 0_pwe_history
-                WHERE oid = %d
-                ORDER BY dob
+                WHERE user_oid = %d
+                ORDER BY oid
         ";
-        $query = sprintf($sql, $oid);
+        $query = sprintf($sql, $user_oid);
         $fail_message = "Could not get password history for user " .
-                        "(oid=$oid).";
+                        "(oid=$user_oid).";
         $result = $this->doQuery($query, $fail_message);
         $history = array();
         $i = 0;
         while ($row = mysql_fetch_row($result)) {
-            $history[$i]['pw_hash'] = $row[0];
-            $history[$i]['dob'] = $this->convertToPHPDate($row[1]);
+            $history[$i]['oid'] = $row[0];
+            $history[$i]['pw_hash'] = $row[1];
+            $history[$i]['dob'] = $this->convertToPHPDate($row[2]);
             $i++;
         }
         return $history;

@@ -23,7 +23,7 @@ VALUES
 
 -- fmulder's passwords: ufos, aliens, scully
 DELETE FROM 0_pwe_history;
-INSERT INTO 0_pwe_history (oid, pw_hash, dob)
+INSERT INTO 0_pwe_history (user_oid, pw_hash, dob)
 VALUES
     (101, '$2y$10$vP0IEcTDdT4KqDP0DhvpDOe0TkSk23TQnhkRNc31WdsNs8u58xDrm',
         '2019-07-04 00:00:00'),
