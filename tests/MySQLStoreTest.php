@@ -367,4 +367,16 @@ class MySQLStoreTest extends TestCase
         $user_after = self::$store->getUserByUsername('doggett');
         $this->assertEquals($user_before, $user_after);
     }
+
+    public function testGetPasswordHistoryGetsIt()
+    {
+        $history = self::$store->getPasswordHistory(101); // fmulder
+        var_dump($history);
+        $pw_3 = $history[2];
+        $this->assertTrue(password_verify('scully', $pw_3['pw_hash']));
+        $this->assertEquals(
+            gmdate('Y-m-d'),
+            date_format($pw_3['dob'], 'Y-m-d')
+        );
+    }
 }

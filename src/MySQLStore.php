@@ -338,7 +338,7 @@ class MySQLStore implements Datastore
 
     public function insertUser($user)
     {
-        $sql = "INSERT INTO 0_pwe_user (oid) VALUES (%d);";
+        $sql = "INSERT INTO 0_pwe_user (oid) VALUES (%d)";
         $query = sprintf($sql, $user->oid);
         $fail_message = "Could not insert user (oid={$user->oid}, " .
                         "username={$user->username}).";
@@ -348,6 +348,22 @@ class MySQLStore implements Datastore
 
     public function getPasswordHistory($oid)
     {
-        return array();
+        $sql = "SELECT pw_hash, dob
+                FROM 0_pwe_history
+                WHERE oid = %d
+                ORDER BY dob
+        ";
+        $query = sprintf($sql, $oid);
+        $fail_message = "Could not get password history for user " .
+                        "(oid=$oid).";
+        $result = $this->doQuery($query, $fail_message);
+        $history = array();
+        $i = 0;
+        while ($row = mysql_fetch_row($result)) {
+            $history[$i]['pw_hash'] = $row[0];
+            $history[$i]['dob'] = $this->convertToPHPDate($row[1]);
+            $i++;
+        }
+        return $history;
     }
 }

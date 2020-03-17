@@ -20,3 +20,16 @@ VALUES
         FALSE, FALSE, 1, '2019-12-25 12:15:00'),
     (102, '$2y$10$vra/wVFQUZHlOaVYIqPew.SbYCmTJDdKmOXHPdq038d6z08xSe.4G',
         TRUE, TRUE, 99, '2020-01-01 00:00:00');
+
+-- fmulder's passwords: ufos, aliens, scully
+DELETE FROM 0_pwe_history;
+INSERT INTO 0_pwe_history (oid, pw_hash, dob)
+VALUES
+    (101, '$2y$10$vP0IEcTDdT4KqDP0DhvpDOe0TkSk23TQnhkRNc31WdsNs8u58xDrm',
+        '2019-07-04 00:00:00'),
+    (101, '$2y$10$tKIhhpROgRDyuG87ejd9cO4HEieZ86j.XGKQPxhfZTB95V9jLFQh2',
+        '2019-12-07 00:00:00'),
+    (101, '$2y$10$5BEkSCYW3k//CaCIejTJNu7uHiGcyFHF9N9oDHCls7/qFSugv5GZu',
+        current_timestamp()),
+    (102, '$2y$10$vra/wVFQUZHlOaVYIqPew.SbYCmTJDdKmOXHPdq038d6z08xSe.4G',
+        current_timestamp());

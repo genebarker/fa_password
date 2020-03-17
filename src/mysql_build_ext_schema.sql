@@ -24,7 +24,8 @@ CREATE TABLE 0_pwe_user (
 
 DROP TABLE IF EXISTS 0_pwe_history;
 CREATE TABLE 0_pwe_history (
-    oid integer PRIMARY KEY,
+    oid integer,
     pw_hash varchar(128),
-    dob date
+    dob timestamp,
+    PRIMARY KEY (oid, dob)
 );
