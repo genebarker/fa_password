@@ -262,4 +262,36 @@ class AuthenticatorTest extends TestCase
         );
         $this->assertNewPasswordTooWeakResult($loginAttempt);
     }
+
+    public function testGoodLoginWithUnmigratedUserReturnsSuccessful()
+    {
+        $loginAttempt = $this->performGoodUnmigratedUserLogin();
+        $this->assertEquals(false, $loginAttempt->has_failed);
+    }
+
+    private function performGoodUnmigratedUserLogin()
+    {
+        return self::$authenticator->login(
+            'skinner',
+            'smoking',
+            self::GOOD_NEW_PASSWORD
+        );
+    }
+
+    public function testGoodLoginWithUnmigratedUserMigratesHim()
+    {
+        $loginAttempt = $this->performGoodUnmigratedUserLogin();
+        $user = self::$store->getUserByUsername('skinner');
+        $this->assertEquals(
+            md5(self::GOOD_NEW_PASSWORD),
+            $user->fa_pw_hash
+        );
+        $this->assertTrue(
+            password_verify(self::GOOD_NEW_PASSWORD, $user->pw_hash)
+        );
+        $this->assertEquals(false, $user->needs_pw_change);
+        $this->assertEquals(false, $user->is_locked);
+        $this->assertEquals(0, $user->ongoing_pw_fail_count);
+        $this->assertEquals(null, $user->last_pw_fail_time);
+    }
 }

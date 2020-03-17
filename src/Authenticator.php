@@ -160,6 +160,13 @@ class Authenticator
             );
             return new LoginAttempt($has_failed, $message);
         }
+
+        $user->fa_pw_hash = md5($new_password);
+        $user->pw_hash = password_hash($new_password, PASSWORD_DEFAULT);
+        $this->store->insertUser($user);
+        $has_failed = false;
+        $message = "Welcome back $username.";
+        return new LoginAttempt($has_failed, $message);
     }
     
     public function tooSoonToTryAgain($user)
