@@ -1,7 +1,7 @@
 -- create new tables for the extension
 DROP TABLE IF EXISTS 0_pwe_config;
 CREATE TABLE 0_pwe_config (
-    okey varchar(50),
+    okey varchar(50) PRIMARY KEY,
     val text
 );
 INSERT INTO 0_pwe_config (okey, val)
