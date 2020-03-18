@@ -194,11 +194,11 @@ class AuthenticatorTest extends TestCase
         $this->loginWithNewPassword('fmulder', 'scully');
         $history = self::$store->getPasswordHistory(101);
         $this->assertTrue(
-            password_verify(self::GOOD_NEW_PASSWORD, $history[3]['pw_hash'])
+            password_verify(self::GOOD_NEW_PASSWORD, $history[0]['pw_hash'])
         );
         $this->assertEquals(
             date('Y-m-d'),
-            date_format($history[3]['dob'], 'Y-m-d')
+            date_format($history[0]['dob'], 'Y-m-d')
         );
     }
 
@@ -371,5 +371,26 @@ class AuthenticatorTest extends TestCase
             'Please create a new password.',
             $loginAttempt->message
         );
+    }
+
+    public function testOnlyMostRecentPasswordsCheckedInHistory()
+    {
+        $passwords_to_add = Config::DEFAULT_PASSWORD_HISTORY_COUNT + 1;
+        $last_password = 'smoking';
+        for ($i = 1; $i <= $passwords_to_add; $i++) {
+            $new_password = self::GOOD_NEW_PASSWORD . "_$i";
+            $this->loginWithNewPassword(
+                'skinner',
+                $last_password,
+                $new_password
+            );
+            $last_password = $new_password;
+        }
+        $loginAttempt = $this->loginWithNewPassword(
+            'skinner',
+            $last_password,
+            self::GOOD_NEW_PASSWORD . "_1"
+        );
+        $this->assertEquals(false, $loginAttempt->has_failed);
     }
 }
