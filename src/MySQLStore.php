@@ -10,6 +10,7 @@ class MySQLStore implements Datastore
     const MYSQL_EXT_BUILD_FILE = __DIR__ . '/mysql_build_ext_schema.sql';
     const MYSQL_EXT_REMOVE_FILE = __DIR__ . '/mysql_remove_ext_schema.sql';
     const MYSQL_TIMESTAMP_FORMAT = 'Y-m-d H:i:s';
+    const MYSQL_DEFAULT_SELECT_LIMIT = 1000;
 
     public $company;
     public $conn;
@@ -355,14 +356,21 @@ class MySQLStore implements Datastore
         $this->updateUser($user);
     }
 
-    public function getPasswordHistory($user_oid)
-    {
+    public function getPasswordHistory(
+        $user_oid,
+        $limit = self::MYSQL_DEFAULT_SELECT_LIMIT
+    ) {
         $sql = "SELECT oid, pw_hash, dob
                 FROM 0_pwe_history
-                WHERE user_oid = %d
+                WHERE oid IN (
+                    SELECT oid FROM 0_pwe_history
+                    WHERE user_oid = %d
+                    ORDER BY oid DESC
+                )
                 ORDER BY oid
+                LIMIT %d
         ";
-        $query = sprintf($sql, $user_oid);
+        $query = sprintf($sql, $user_oid, $limit);
         $fail_message = "Could not get password history for user " .
                         "(oid=$user_oid).";
         $result = $this->doQuery($query, $fail_message);

@@ -368,13 +368,16 @@ class MySQLStoreTest extends TestCase
         $this->assertEquals($user_before, $user_after);
     }
 
-    public function testGetPasswordHistoryGetsIt()
+    public function testGetPasswordHistoryGetsItInExpectedOrder()
     {
         $exp_pw = ['ufos', 'aliens', 'scully'];
         $exp_dob = ['2019-07-04', '2019-12-07', gmdate('Y-m-d')];
         $history = self::$store->getPasswordHistory(101);
         $this->assertEquals(3, count($history));
+        $last_oid = -1;
         for ($i = 0; $i < 3; $i++) {
+            $this->assertTrue($history[$i]['oid'] > $last_oid);
+            $last_oid = $history[$i]['oid'];
             $this->assertTrue(
                 password_verify($exp_pw[$i], $history[$i]['pw_hash'])
             );
@@ -383,6 +386,13 @@ class MySQLStoreTest extends TestCase
                 date_format($history[$i]['dob'], 'Y-m-d')
             );
         }
+    }
+
+    public function testGetPasswordHistoryObeysLimit()
+    {
+        $limit = 2;
+        $history = self::$store->getPasswordHistory(101, $limit);
+        $this->assertEquals($limit, count($history));
     }
 
     public function testAddPasswordToHistoryAddsIt()
