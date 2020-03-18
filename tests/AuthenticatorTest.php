@@ -318,6 +318,10 @@ class AuthenticatorTest extends TestCase
         $this->assertEquals(false, $user->is_locked);
         $this->assertEquals(0, $user->ongoing_pw_fail_count);
         $this->assertEquals(null, $user->last_pw_fail_time);
+        $this->assertEquals(
+            date('Y-m-d'),
+            date_format($user->last_pw_update_time, 'Y-m-d')
+        );
     }
 
     public function testLoginWithUnmigratedUserAddsNewPasswordToHistory()

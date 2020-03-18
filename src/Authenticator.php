@@ -175,6 +175,7 @@ class Authenticator
 
         $user->fa_pw_hash = md5($new_password);
         $user->pw_hash = password_hash($new_password, PASSWORD_DEFAULT);
+        $user->last_pw_update_time = date_create('now');
         $this->store->insertUser($user);
         $this->store->addPasswordToHistory(
             $user->oid,
