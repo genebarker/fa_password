@@ -370,13 +370,19 @@ class MySQLStoreTest extends TestCase
 
     public function testGetPasswordHistoryGetsIt()
     {
+        $exp_pw = ['ufos', 'aliens', 'scully'];
+        $exp_dob = ['2019-07-04', '2019-12-07', gmdate('Y-m-d')];
         $history = self::$store->getPasswordHistory(101);
-        $pw_3 = $history[2];
-        $this->assertTrue(password_verify('scully', $pw_3['pw_hash']));
-        $this->assertEquals(
-            gmdate('Y-m-d'), // test data inserted with GMT date of now
-            date_format($pw_3['dob'], 'Y-m-d')
-        );
+        $this->assertEquals(3, count($history));
+        for ($i = 0; $i < 3; $i++) {
+            $this->assertTrue(
+                password_verify($exp_pw[$i], $history[$i]['pw_hash'])
+            );
+            $this->assertEquals(
+                $exp_dob[$i],
+                date_format($history[$i]['dob'], 'Y-m-d')
+            );
+        }
     }
 
     public function testAddPasswordToHistoryAddsIt()

@@ -26,9 +26,9 @@ VALUES
 DELETE FROM 0_pwe_history;
 INSERT INTO 0_pwe_history (user_oid, pw_hash, dob)
 VALUES
-    (101, '$2y$10$vP0IEcTDdT4KqDP0DhvpDOe0TkSk23TQnhkRNc31WdsNs8u58xDrm',
+    (101, '$2y$10$hr33frHko.wW4z2nmFKXc.nuOsYzRggAkM1rFXNvfOt5RoowBfscS',
         '2019-07-04 00:00:00'),
-    (101, '$2y$10$tKIhhpROgRDyuG87ejd9cO4HEieZ86j.XGKQPxhfZTB95V9jLFQh2',
+    (101, '$2y$10$ThepYMecfxatoYQbjJ1g4uvlRzfDd.CEUVrsgkqj/BMb5HMT8JcRa',
         '2019-12-07 00:00:00'),
     (101, '$2y$10$5BEkSCYW3k//CaCIejTJNu7uHiGcyFHF9N9oDHCls7/qFSugv5GZu',
         current_timestamp()),
