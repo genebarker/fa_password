@@ -209,6 +209,16 @@ class AuthenticatorTest extends TestCase
         $this->assertEquals(false, $user->needs_pw_change);
     }
 
+    public function testLoginWithNewPasswordSetsLastUpdateTime()
+    {
+        $this->loginWithNewPassword('dscully', 'mulder');
+        $user = self::$store->getUserByUsername('dscully');
+        $this->assertEquals(
+            date('Y-m-d'),
+            date_format($user->last_pw_update_time, 'Y-m-d')
+        );
+    }
+
     public function testLoginWithNewPasswordChangesFAPasswordToo()
     {
         $this->loginWithNewPassword('dscully', 'mulder');

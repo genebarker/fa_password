@@ -94,14 +94,18 @@ class Authenticator
             $user->fa_pw_hash = md5($new_password);
             $user->pw_hash = password_hash($new_password, PASSWORD_DEFAULT);
             $user->needs_pw_change = false;
+            $user->last_pw_update_time = date_create('now');
             $this->store->addPasswordToHistory(
                 $user->oid,
                 $user->pw_hash,
-                date_create('now')
+                $user->last_pw_update_time
             );
         }
 
-        if ($user->needs_pw_change || $this->passwordIsTooOld($user)) {
+        if (
+            $user->needs_pw_change
+            || $this->passwordIsTooOld($user->last_pw_update_time)
+        ) {
             $has_failed = true;
             $message = self::PASSWORD_EXPIRED_MSG;
             return new LoginAttempt($has_failed, $message);
@@ -204,12 +208,13 @@ class Authenticator
         );
     }
 
-    private function passwordIsTooOld($user)
+    private function passwordIsTooOld($last_pw_update_time)
     {
         $life_length = new DateInterval(
             'P' . $this->config->maximum_password_age_days . 'D'
         );
-        $expire_time = date_add($user->last_pw_update_time, $life_length);
+        $expire_time = clone $last_pw_update_time;
+        date_add($expire_time, $life_length);
         $now = date_create('now');
 
         return $now > $expire_time;
