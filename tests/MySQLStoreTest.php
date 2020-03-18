@@ -382,13 +382,11 @@ class MySQLStoreTest extends TestCase
     public function testAddPasswordToHistoryAddsIt()
     {
         $pw_hash = password_hash('noway', PASSWORD_DEFAULT);
-        self::$store->addPasswordToHistory(102, $pw_hash);
+        $now = date_create('now');
+        self::$store->addPasswordToHistory(102, $pw_hash, $now);
         $history = self::$store->getPasswordHistory(102);
         $new_one = $history[1];
         $this->assertTrue(password_verify('noway', $new_one['pw_hash']));
-        $this->assertEquals(
-            date('Y-m-d'),
-            date_format($new_one['dob'], 'Y-m-d')
-        );
+        $this->assertEquals($now, $new_one['dob']);
     }
 }

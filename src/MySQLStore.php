@@ -368,14 +368,14 @@ class MySQLStore implements Datastore
         return $history;
     }
 
-    public function addPasswordToHistory($user_oid, $pw_hash)
+    public function addPasswordToHistory($user_oid, $pw_hash, $php_date)
     {
         $sql = "INSERT INTO 0_pwe_history (user_oid, pw_hash, dob)
                 VALUES (%d, '%s', '%s')
         ";
-        $now = self::convertToSQLTimestamp(date_create('now'));
-        $query = sprintf($sql, $user_oid, $pw_hash, $now);
-        $fail_message = "Could not add to user's password history " .
+        $mysql_date = self::convertToSQLTimestamp($php_date);
+        $query = sprintf($sql, $user_oid, $pw_hash, $mysql_date);
+        $fail_message = "Could not add password to user's history " .
                         "(user_oid={$user_oid}).";
         $this->doQuery($query, $fail_message);
     }

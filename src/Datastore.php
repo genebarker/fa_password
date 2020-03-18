@@ -24,5 +24,5 @@ interface Datastore
     public function updateUser($user);
     public function insertUser($user);
     public function getPasswordHistory($user_oid);
-    public function addPasswordToHistory($user_oid, $pw_hash);
+    public function addPasswordToHistory($user_oid, $pw_hash, $php_date);
 }
