@@ -13,13 +13,14 @@ VALUES
 DELETE FROM 0_pwe_user;
 INSERT INTO 0_pwe_user (
     oid, pw_hash,
-    needs_pw_change, is_locked, ongoing_pw_fail_count, last_pw_fail_time
+    needs_pw_change, is_locked, ongoing_pw_fail_count, last_pw_fail_time,
+    last_pw_update_time
 )
 VALUES
     (101, '$2y$10$5BEkSCYW3k//CaCIejTJNu7uHiGcyFHF9N9oDHCls7/qFSugv5GZu',
-        FALSE, FALSE, 1, '2019-12-25 12:15:00'),
+        FALSE, FALSE, 1, '2019-12-25 12:15:00', current_timestamp()),
     (102, '$2y$10$vra/wVFQUZHlOaVYIqPew.SbYCmTJDdKmOXHPdq038d6z08xSe.4G',
-        TRUE, TRUE, 99, '2020-01-01 00:00:00');
+        TRUE, TRUE, 99, '2020-01-01 00:00:00', current_timestamp());
 
 -- fmulder's passwords: ufos, aliens, scully
 DELETE FROM 0_pwe_history;

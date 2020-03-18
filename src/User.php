@@ -15,5 +15,6 @@ class User
         $this->is_locked = false;
         $this->ongoing_pw_fail_count = 0;
         $this->last_pw_fail_time = null;
+        $this->last_pw_update_time = null;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace madman\Password;
 
+use DateInterval;
 use PHPUnit\Framework\TestCase;
 
 class UserTest extends TestCase
@@ -21,6 +22,7 @@ class UserTest extends TestCase
         $this->assertEquals(false, $user->is_locked);
         $this->assertEquals(0, $user->ongoing_pw_fail_count);
         $this->assertEquals(null, $user->last_pw_fail_time);
+        $this->assertEquals(null, $user->last_pw_update_time);
     }
 
     public function testEqualsTrueWhenSame()
@@ -46,7 +48,15 @@ class UserTest extends TestCase
         $user->last_pw_fail_time = MySQLStore::convertToPHPDate(
             self::NOON_XMAS_2019
         );
+        $user->last_pw_update_time = self::getDateYesterday();
         return $user;
+    }
+
+    public static function getDateYesterday()
+    {
+        $today = date_create('now');
+        $one_day = new DateInterval('P1D');
+        return date_sub($today, $one_day);
     }
 
     public function testEqualsFalseWhenAnAttrDifferent()

@@ -19,7 +19,8 @@ CREATE TABLE 0_pwe_user (
     needs_pw_change boolean,
     is_locked boolean,
     ongoing_pw_fail_count integer,
-    last_pw_fail_time timestamp
+    last_pw_fail_time timestamp,
+    last_pw_update_time timestamp
 );
 
 DROP TABLE IF EXISTS 0_pwe_history;

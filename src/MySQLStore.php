@@ -232,7 +232,8 @@ class MySQLStore implements Datastore
     {
         $sql = "SELECT u.id, u.user_id, u.password, u2.pw_hash,
                     u2.needs_pw_change, u2.is_locked,
-                    u2.ongoing_pw_fail_count, u2.last_pw_fail_time
+                    u2.ongoing_pw_fail_count, u2.last_pw_fail_time,
+                    u2.last_pw_update_time
                 FROM 0_users u, 0_pwe_user u2
                 WHERE u.user_id = '%s'
                     AND u2.oid = u.id
@@ -249,6 +250,9 @@ class MySQLStore implements Datastore
         $user->ongoing_pw_fail_count = $row[6];
         $user->last_pw_fail_time = (
             $row[7] == null ? null : self::convertToPHPDate($row[7])
+        );
+        $user->last_pw_update_time = (
+            $row[8] == null ? null : self::convertToPHPDate($row[8])
         );
         return $user;
     }
@@ -284,7 +288,8 @@ class MySQLStore implements Datastore
                     needs_pw_change = %b,
                     is_locked = %b,
                     ongoing_pw_fail_count = %d,
-                    last_pw_fail_time = %s
+                    last_pw_fail_time = %s,
+                    last_pw_update_time = %s
                 WHERE oid = %d
         ";
         $query = sprintf(
@@ -296,6 +301,10 @@ class MySQLStore implements Datastore
             (
                 $user->last_pw_fail_time == null ? 'null' : "'" .
                 self::convertToSQLTimestamp($user->last_pw_fail_time) . "'"
+            ),
+            (
+                $user->last_pw_update_time == null ? 'null' : "'" .
+                self::convertToSQLTimestamp($user->last_pw_update_time) . "'"
             ),
             $user->oid
         );
