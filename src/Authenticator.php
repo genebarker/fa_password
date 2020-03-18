@@ -101,7 +101,7 @@ class Authenticator
             );
         }
 
-        if ($user->needs_pw_change) {
+        if ($user->needs_pw_change || $this->passwordIsTooOld($user)) {
             $has_failed = true;
             $message = self::PASSWORD_EXPIRED_MSG;
             return new LoginAttempt($has_failed, $message);
@@ -202,5 +202,16 @@ class Authenticator
             'New password is too weak. ' .
             $this->zxcvbn->getPasswordHints($username, $password)
         );
+    }
+
+    private function passwordIsTooOld($user)
+    {
+        $life_length = new DateInterval(
+            'P' . $this->config->maximum_password_age_days . 'D'
+        );
+        $expire_time = date_add($user->last_pw_update_time, $life_length);
+        $now = date_create('now');
+
+        return $now > $expire_time;
     }
 }

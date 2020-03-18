@@ -3,6 +3,7 @@
 namespace madman\Password;
 
 use DateInterval;
+use DateTime;
 use PHPUnit\Framework\TestCase;
 
 class AuthenticatorTest extends TestCase
@@ -320,5 +321,21 @@ class AuthenticatorTest extends TestCase
             date('Y-m-d'),
             date_format($history[0]['dob'], 'Y-m-d')
         );
+    }
+
+    public function testLoginWithOldPasswordForcesUpdate()
+    {
+        $user = self::$store->getUserByUsername('fmulder');
+        $user->last_pw_update_time = $this->getDateForPasswordTooOld();
+        self::$store->updateUser($user);
+        $loginAttempt = self::$authenticator->login('fmulder', 'scully');
+        $this->assertPasswordExpiredResult($loginAttempt);
+    }
+
+    public function getDateForPasswordTooOld()
+    {
+        $days_old = Config::DEFAULT_MAXIMUM_PASSWORD_AGE_DAYS + 1;
+        $today = new DateTime();
+        return $today->sub(new DateInterval('P' . $days_old . 'D'));
     }
 }
