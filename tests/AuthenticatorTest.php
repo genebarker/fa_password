@@ -352,4 +352,24 @@ class AuthenticatorTest extends TestCase
         $today = new DateTime();
         return $today->sub(new DateInterval('P' . $days_old . 'D'));
     }
+
+    public function testLoginWithNewPasswordFailsWhenMatchesExisting()
+    {
+        $loginAttempt = $this->loginWithNewPassword(
+            'fmulder',
+            'scully',
+            'scully'
+        );
+        $this->assertNeedNewPasswordResult($loginAttempt);
+    }
+
+    public function assertNeedNewPasswordResult($loginAttempt)
+    {
+        $this->assertEquals(true, $loginAttempt->has_failed);
+        $this->assertEquals(
+            'This password matches one of your recently used ones. ' .
+            'Please create a new password.',
+            $loginAttempt->message
+        );
+    }
 }

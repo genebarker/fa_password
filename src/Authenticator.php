@@ -24,6 +24,10 @@ class Authenticator
         'The password for this account expired. Please provide a new one ' .
         'using the new password option on the login screen.'
     );
+    const RECYCLED_PASSWORD_MSG = (
+        'This password matches one of your recently used ones. Please ' .
+        'create a new password.'
+    );
 
     public $store;
     public $config;
@@ -86,6 +90,11 @@ class Authenticator
         }
 
         if ($new_password != null) {
+            if ($this->passwordInHistory($user->oid, $new_password)) {
+                $has_failed = true;
+                $message = self::RECYCLED_PASSWORD_MSG;
+                return new LoginAttempt($has_failed, $message);
+            }
             if ($this->passwordTooWeak($username, $new_password)) {
                 $has_failed = true;
                 $message = $this->createPasswordTooWeakMessage(
@@ -197,6 +206,17 @@ class Authenticator
         $now = date_create('now');
 
         return $now < $expire_time;
+    }
+
+    public function passwordInHistory($user_oid, $password)
+    {
+        $history = $this->store->getPasswordHistory($user_oid);
+        foreach ($history as $pw) {
+            if (password_verify($password, $pw['pw_hash'])) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function passwordTooWeak($username, $password)
