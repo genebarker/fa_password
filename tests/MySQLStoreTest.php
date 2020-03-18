@@ -370,13 +370,14 @@ class MySQLStoreTest extends TestCase
 
     public function testGetPasswordHistoryGetsItInExpectedOrder()
     {
-        $exp_pw = ['ufos', 'aliens', 'scully'];
-        $exp_dob = ['2019-07-04', '2019-12-07', gmdate('Y-m-d')];
+        // most recent first
+        $exp_pw = ['scully', 'aliens', 'ufos'];
+        $exp_dob = [gmdate('Y-m-d'), '2019-12-07', '2019-07-04'];
         $history = self::$store->getPasswordHistory(101);
         $this->assertEquals(3, count($history));
-        $last_oid = -1;
+        $last_oid = 1000;
         for ($i = 0; $i < 3; $i++) {
-            $this->assertTrue($history[$i]['oid'] > $last_oid);
+            $this->assertTrue($history[$i]['oid'] < $last_oid);
             $last_oid = $history[$i]['oid'];
             $this->assertTrue(
                 password_verify($exp_pw[$i], $history[$i]['pw_hash'])
@@ -401,7 +402,7 @@ class MySQLStoreTest extends TestCase
         $now = date_create('now');
         self::$store->addPasswordToHistory(102, $pw_hash, $now);
         $history = self::$store->getPasswordHistory(102);
-        $new_one = $history[1];
+        $new_one = $history[0];
         $this->assertTrue(password_verify('noway', $new_one['pw_hash']));
         $this->assertEquals($now, $new_one['dob']);
     }

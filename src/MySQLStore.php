@@ -362,12 +362,8 @@ class MySQLStore implements Datastore
     ) {
         $sql = "SELECT oid, pw_hash, dob
                 FROM 0_pwe_history
-                WHERE oid IN (
-                    SELECT oid FROM 0_pwe_history
-                    WHERE user_oid = %d
-                    ORDER BY oid DESC
-                )
-                ORDER BY oid
+                WHERE user_oid = %d
+                ORDER BY oid DESC
                 LIMIT %d
         ";
         $query = sprintf($sql, $user_oid, $limit);
