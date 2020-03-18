@@ -62,7 +62,10 @@ class Authenticator
                 $new_password
             );
         }
-        if ($user->is_locked && $this->tooSoonToTryAgain($user)) {
+        if (
+            $user->is_locked
+            && $this->tooSoonToTryAgain($user->last_pw_fail_time)
+        ) {
             $has_failed = true;
             $message = self::ACCOUNT_LOCKED_MSG;
             return new LoginAttempt($has_failed, $message);
@@ -183,12 +186,13 @@ class Authenticator
         return new LoginAttempt($has_failed, $message);
     }
     
-    public function tooSoonToTryAgain($user)
+    public function tooSoonToTryAgain($last_pw_fail_time)
     {
         $lock_length = new DateInterval(
             'PT' . $this->config->login_fail_lock_minutes . 'M'
         );
-        $expire_time = date_add($user->last_pw_fail_time, $lock_length);
+        $expire_time = clone $last_pw_fail_time;
+        date_add($expire_time, $lock_length);
         $now = date_create('now');
 
         return $now < $expire_time;
