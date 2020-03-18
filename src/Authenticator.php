@@ -165,6 +165,7 @@ class Authenticator
         $user->fa_pw_hash = md5($new_password);
         $user->pw_hash = password_hash($new_password, PASSWORD_DEFAULT);
         $this->store->insertUser($user);
+        $this->store->addPasswordToHistory($user->oid, $user->pw_hash);
         $has_failed = false;
         $message = "Welcome back $username.";
         return new LoginAttempt($has_failed, $message);

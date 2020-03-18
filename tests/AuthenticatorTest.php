@@ -292,7 +292,7 @@ class AuthenticatorTest extends TestCase
         );
     }
 
-    public function testGoodLoginWithUnmigratedUserMigratesHim()
+    public function testLoginWithUnmigratedUserMigratesHim()
     {
         $loginAttempt = $this->performGoodUnmigratedUserLogin();
         $user = self::$store->getUserByUsername('skinner');
@@ -307,5 +307,18 @@ class AuthenticatorTest extends TestCase
         $this->assertEquals(false, $user->is_locked);
         $this->assertEquals(0, $user->ongoing_pw_fail_count);
         $this->assertEquals(null, $user->last_pw_fail_time);
+    }
+
+    public function testLoginWithUnmigratedUserAddsNewPasswordToHistory()
+    {
+        $this->performGoodUnmigratedUserLogin();
+        $history = self::$store->getPasswordHistory(103);
+        $this->assertTrue(
+            password_verify(self::GOOD_NEW_PASSWORD, $history[0]['pw_hash'])
+        );
+        $this->assertEquals(
+            date('Y-m-d'),
+            date_format($history[0]['dob'], 'Y-m-d')
+        );
     }
 }
