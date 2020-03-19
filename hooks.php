@@ -90,4 +90,12 @@ class hooks_password extends hooks
 
         return !$loginAttempt->has_failed;
     }
+
+    function update_password($username, $curr_password, $new_password)
+    {
+        return $this->authenticate(
+            $username,
+            [$curr_password, $new_password]
+        );
+    }
 }
