@@ -40,10 +40,19 @@ class Authenticator
         $this->zxcvbn = new ZxcvbnWrapper();
     }
 
-    public function login($username, $password, $new_password = null)
-    {
+    public function login(
+        $username,
+        $password,
+        $new_password = null,
+        $is_temporary = false
+    ) {
         try {
-            return $this->processLogin($username, $password, $new_password);
+            return $this->processLogin(
+                $username,
+                $password,
+                $new_password,
+                $is_temporary
+            );
         } catch (\Exception $e) {
             $has_failed = true;
             $message = (
@@ -56,8 +65,12 @@ class Authenticator
         }
     }
 
-    public function processLogin($username, $password, $new_password)
-    {
+    public function processLogin(
+        $username,
+        $password,
+        $new_password,
+        $is_temporary
+    ) {
         $user = $this->getExtendedUser($username);
         if ($user == null) {
             return $this->processNewUserLogin(
@@ -66,6 +79,7 @@ class Authenticator
                 $new_password
             );
         }
+
         if (
             $user->is_locked
             && $this->tooSoonToTryAgain($user->last_pw_fail_time)
@@ -74,6 +88,7 @@ class Authenticator
             $message = self::ACCOUNT_LOCKED_MSG;
             return new LoginAttempt($has_failed, $message);
         }
+
         if (!password_verify($password, $user->pw_hash)) {
             $user->ongoing_pw_fail_count++;
             $user->last_pw_fail_time = date_create('now');
@@ -105,22 +120,22 @@ class Authenticator
             }
             $user->fa_pw_hash = md5($new_password);
             $user->pw_hash = password_hash($new_password, PASSWORD_DEFAULT);
-            $user->needs_pw_change = false;
+            $user->needs_pw_change = $is_temporary;
             $user->last_pw_update_time = date_create('now');
             $this->store->addPasswordToHistory(
                 $user->oid,
                 $user->pw_hash,
                 $user->last_pw_update_time
             );
-        }
-
-        if (
-            $user->needs_pw_change
-            || $this->passwordIsTooOld($user->last_pw_update_time)
-        ) {
-            $has_failed = true;
-            $message = self::PASSWORD_EXPIRED_MSG;
-            return new LoginAttempt($has_failed, $message);
+        } else {
+            if (
+                $user->needs_pw_change
+                || $this->passwordIsTooOld($user->last_pw_update_time)
+            ) {
+                $has_failed = true;
+                $message = self::PASSWORD_EXPIRED_MSG;
+                return new LoginAttempt($has_failed, $message);
+            }
         }
 
         $user->is_locked = false;

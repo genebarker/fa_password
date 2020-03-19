@@ -219,6 +219,22 @@ class AuthenticatorTest extends TestCase
         );
     }
 
+    public function testLoginWithNewTempPasswordDoesIt()
+    {
+        $is_temporary = true;
+        self::$authenticator->login(
+            'fmulder',
+            'scully',
+            self::GOOD_NEW_PASSWORD,
+            $is_temporary
+        );
+        $loginAttempt = self::$authenticator->login(
+            'fmulder',
+            self::GOOD_NEW_PASSWORD
+        );
+        $this->assertPasswordExpiredResult($loginAttempt);
+    }
+
     public function testLoginWithNewPasswordChangesFAPasswordToo()
     {
         $this->loginWithNewPassword('dscully', 'mulder');
