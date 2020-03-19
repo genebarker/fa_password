@@ -65,7 +65,7 @@ class Authenticator
         }
     }
 
-    public function processLogin(
+    private function processLogin(
         $username,
         $password,
         $new_password,
@@ -217,7 +217,7 @@ class Authenticator
         return new LoginAttempt($has_failed, $message);
     }
     
-    public function tooSoonToTryAgain($last_pw_fail_time)
+    private function tooSoonToTryAgain($last_pw_fail_time)
     {
         $lock_length = new DateInterval(
             'PT' . $this->config->login_fail_lock_minutes . 'M'
@@ -229,7 +229,7 @@ class Authenticator
         return $now < $expire_time;
     }
 
-    public function passwordInHistory($user_oid, $password)
+    private function passwordInHistory($user_oid, $password)
     {
         $limit = $this->config->password_history_count;
         $history = $this->store->getPasswordHistory($user_oid, $limit);
@@ -241,7 +241,7 @@ class Authenticator
         return false;
     }
 
-    public function passwordTooWeak($username, $password)
+    private function passwordTooWeak($username, $password)
     {
         $score = $this->zxcvbn->getPasswordScore($username, $password);
         return ($score < $this->config->minimum_password_strength);
