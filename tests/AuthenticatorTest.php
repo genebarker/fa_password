@@ -224,7 +224,7 @@ class AuthenticatorTest extends TestCase
         $is_temporary = true;
         self::$authenticator->login(
             'fmulder',
-            'scully',
+            null,
             self::GOOD_NEW_PASSWORD,
             $is_temporary
         );
@@ -358,7 +358,7 @@ class AuthenticatorTest extends TestCase
         $is_temporary = true;
         self::$authenticator->login(
             'skinner',
-            'smoking',
+            null,
             self::GOOD_NEW_PASSWORD,
             $is_temporary
         );

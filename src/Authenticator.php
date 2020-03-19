@@ -90,7 +90,10 @@ class Authenticator
             return new LoginAttempt($has_failed, $message);
         }
 
-        if (!password_verify($password, $user->pw_hash)) {
+        if (
+            !$is_temporary
+            && !password_verify($password, $user->pw_hash)
+        ) {
             $user->ongoing_pw_fail_count++;
             $user->last_pw_fail_time = date_create('now');
             if (
@@ -183,7 +186,7 @@ class Authenticator
             $message = self::UNKNOWN_USERNAME_MSG;
             return new LoginAttempt($has_failed, $message);
         }
-        if (md5($password) != $user->fa_pw_hash) {
+        if (!$is_temporary && md5($password) != $user->fa_pw_hash) {
             $has_failed = true;
             $message = self::BAD_PASSWORD_MSG;
             return new LoginAttempt($has_failed, $message);
