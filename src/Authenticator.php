@@ -76,7 +76,8 @@ class Authenticator
             return $this->processNewUserLogin(
                 $username,
                 $password,
-                $new_password
+                $new_password,
+                $is_temporary
             );
         }
 
@@ -170,8 +171,12 @@ class Authenticator
         return $this->getUser('getBaseUserByUsername', $username);
     }
 
-    private function processNewUserLogin($username, $password, $new_password)
-    {
+    private function processNewUserLogin(
+        $username,
+        $password,
+        $new_password,
+        $is_temporary
+    ) {
         $user = $this->getBaseUser($username);
         if ($user == null) {
             $has_failed = true;
@@ -199,6 +204,7 @@ class Authenticator
 
         $user->fa_pw_hash = md5($new_password);
         $user->pw_hash = password_hash($new_password, PASSWORD_DEFAULT);
+        $user->needs_pw_change = $is_temporary;
         $user->last_pw_update_time = date_create('now');
         $this->store->insertUser($user);
         $this->store->addPasswordToHistory(

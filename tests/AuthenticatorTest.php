@@ -353,6 +353,22 @@ class AuthenticatorTest extends TestCase
         );
     }
 
+    public function testLoginWithUnmigratedUserWithTempPasswordDoesIt()
+    {
+        $is_temporary = true;
+        self::$authenticator->login(
+            'skinner',
+            'smoking',
+            self::GOOD_NEW_PASSWORD,
+            $is_temporary
+        );
+        $loginAttempt = self::$authenticator->login(
+            'skinner',
+            self::GOOD_NEW_PASSWORD
+        );
+        $this->assertPasswordExpiredResult($loginAttempt);
+    }
+
     public function testLoginWithOldPasswordForcesUpdate()
     {
         $user = self::$store->getUserByUsername('fmulder');
