@@ -81,21 +81,34 @@ class hooks_password extends hooks
         if (is_array($password)) {
             $curr_password = $password[0];
             $new_password = $password[1];
+            $is_temporary = (
+                array_key_exists(2, $password) ? $password[2]: false
+            );
         } else {
             $curr_password = $password;
             $new_password = null;
+            $is_temporary = false;
         }
-        $loginAttempt = $auth->login($username, $curr_password, $new_password);
+        $loginAttempt = $auth->login(
+            $username,
+            $curr_password,
+            $new_password,
+            $is_temporary
+        );
         $this->lastLoginAttempt = $loginAttempt;
 
         return !$loginAttempt->has_failed;
     }
 
-    function update_password($username, $curr_password, $new_password)
-    {
+    function update_password(
+        $username,
+        $curr_password,
+        $new_password,
+        $is_temporary = false
+    ) {
         return $this->authenticate(
             $username,
-            [$curr_password, $new_password]
+            [$curr_password, $new_password, $is_temporary]
         );
     }
 }
