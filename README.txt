@@ -10,8 +10,10 @@ security:
 - On repeated password failures, disable user login for set time; and
 - Add Password Security Setup option to adjust settings for above features.
 
-## Design Notes
+*Design Notes:*
 
+- This extension uses the 3rd party components `zxcvbn-php` and
+  `polyfill-mbstring`. Please see `vendor/README.txt` for details.
 - This extension is designed to work with the 'fixes' branch of the fork of
   the FA repository found here: https://github.com/genebarker/FA/wiki
 - The fork is used so that the extension can provide feedback to users
@@ -22,7 +24,7 @@ security:
 - When extension is deactivated, users login as before using their most
   recent password (since new passwords also stored in original location).
 
-## Installation Instructions
+*Installation Instructions:*
 
 1. Clone the forked FA repository:
 
@@ -34,7 +36,7 @@ security:
 
 3. Install FA as usual. Notes:
 
-    - See the official FA Wiki for instructions
+    - See the official FA Wiki for instructions:
       https://frontaccounting.com/fawiki/index.php?n=Main.Installation
     - `fixes` is a hardened version of FA 2.3
     - Use MySQL v5.6 to avoid open issues with FA 2.3
