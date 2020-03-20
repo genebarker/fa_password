@@ -9,19 +9,24 @@ class ConfigTest extends TestCase
     public function testHasExpectedAttributes()
     {
         $config = new Config();
-        $attribute = [
-            'login_fail_threshold_count',
-            'login_fail_lock_minutes',
-            'minimum_password_strength',
-            'maximum_password_age_days',
-            'password_history_count',
-        ];
+        $attribute = $this->getAttributeNames();
         foreach ($attribute as $attr) {
             $this->assertTrue(
                 property_exists($config, $attr),
                 "missing expected attribute: $attr"
             );
         }
+    }
+
+    public function getAttributeNames()
+    {
+        return [
+            'login_fail_threshold_count',
+            'login_fail_lock_minutes',
+            'minimum_password_strength',
+            'maximum_password_age_days',
+            'password_history_count',
+        ];
     }
 
     public function testInitializationSetsToDefaultValues()
@@ -47,5 +52,28 @@ class ConfigTest extends TestCase
             Config::DEFAULT_PASSWORD_HISTORY_COUNT,
             $config->password_history_count
         );
+    }
+
+    public function testValidateSucceedsOnGoodValues()
+    {
+        $config = new Config();
+        $this->assertTrue($config->hasValidValues());
+    }
+
+    public function testValidateFailsOnBadThresholdCounts()
+    {
+        $attribute = $this->getAttributeNames();
+        foreach ($attribute as $attr) {
+            $bad_value = [null, '', 'a', 0, -1];
+            foreach ($bad_value as $value) {
+                $config = new Config();
+                $config->$attr = $value;
+                $this->assertFalse(
+                    $config->hasValidValues(),
+                    "failed to detect bad value: $value " .
+                    "for attribute: $attr\n"
+                );
+            }
+        }
     }
 }

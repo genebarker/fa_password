@@ -24,4 +24,22 @@ class Config
         $this->maximum_password_age_days = self::DEFAULT_MAXIMUM_PASSWORD_AGE_DAYS;
         $this->password_history_count = self::DEFAULT_PASSWORD_HISTORY_COUNT;
     }
+
+    public function hasValidValues()
+    {
+        $attribute = [
+            'login_fail_threshold_count',
+            'login_fail_lock_minutes',
+            'minimum_password_strength',
+            'maximum_password_age_days',
+            'password_history_count',
+        ];
+        foreach ($attribute as $attr) {
+            $value = $this->$attr;
+            if ($value == null || !is_int($value) || $value <= 0) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
