@@ -22,14 +22,14 @@ function ref_row_with_note($label, $value, $note = '')
     echo "</tr>";
 }
 
-function save_password_config($store)
+function get_password_config_values($store)
 {
     $config = new Config();
     $key = $store->getConfigKeys();
     foreach ($key as $okey) {
-        $config->$okey = $_POST[$okey];
+        $config->$okey = intval($_POST[$okey]);
     }
-    $store->updateConfig($config);
+    return $config;
 }
 
 function render_password_setup_form($pw_config)
@@ -84,10 +84,18 @@ $store = new MySQLStore();
 $store->setConnection($db);
 
 if (isset($_POST['set_pwe_config'])) {
-    save_password_config($store);
-    display_notification_centered(
-        'Password security settings have been updated.'
-    );
+    $config = get_password_config_values($store);
+    if ($config->hasValidValues()) {
+        $store->updateConfig($config);
+        display_notification(
+            'Password security settings have been updated.'
+        );
+    } else {
+        display_error(
+            'Invalid password security settings. Each setting must be a ' .
+            'positive integer.'
+        );
+    }
 }
 
 $pw_config = $store->getConfig();
