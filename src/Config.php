@@ -15,4 +15,13 @@ class Config
     public $minimum_password_strength;
     public $maximum_password_age_days;
     public $password_history_count;
+
+    public function __construct()
+    {
+        $this->login_fail_threshold_count = self::DEFAULT_LOGIN_FAIL_THRESHOLD_COUNT;
+        $this->login_fail_lock_minutes = self::DEFAULT_LOGIN_FAIL_LOCK_MINUTES;
+        $this->minimum_password_strength = self::DEFAULT_MINIMUM_PASSWORD_STRENGTH;
+        $this->maximum_password_age_days = self::DEFAULT_MAXIMUM_PASSWORD_AGE_DAYS;
+        $this->password_history_count = self::DEFAULT_PASSWORD_HISTORY_COUNT;
+    }
 }
