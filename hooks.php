@@ -103,9 +103,19 @@ class hooks_password extends hooks
     function update_password(
         $username,
         $curr_password,
-        $new_password,
-        $is_temporary = false
+        $new_password
     ) {
+        $is_temporary = false;
+        return $this->authenticate(
+            $username,
+            [$curr_password, $new_password, $is_temporary]
+        );
+    }
+
+    function reset_password($username, $new_password)
+    {
+        $curr_password = null;
+        $is_temporary = true;
         return $this->authenticate(
             $username,
             [$curr_password, $new_password, $is_temporary]
