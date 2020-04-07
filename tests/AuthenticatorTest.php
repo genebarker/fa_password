@@ -221,12 +221,9 @@ class AuthenticatorTest extends TestCase
 
     public function testLoginWithNewTempPasswordDoesIt()
     {
-        $is_temporary = true;
-        self::$authenticator->login(
+        self::$authenticator->resetPassword(
             'fmulder',
-            null,
-            self::GOOD_NEW_PASSWORD,
-            $is_temporary
+            self::GOOD_NEW_PASSWORD
         );
         $loginAttempt = self::$authenticator->login(
             'fmulder',

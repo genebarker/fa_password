@@ -39,10 +39,7 @@ class hooks_password extends hooks
     }
 
     function activate_extension($company, $check_only = true) {
-        global $db;
-    
-        $store = new MySQLStore($company);
-        $store->setConnection($db);
+        $store = $this->get_datastore();
         if (!$check_only)
         {
             try {
@@ -54,11 +51,19 @@ class hooks_password extends hooks
         return true;
     }
 
-    function deactivate_extension($company, $check_only = true) {
+    private function get_datastore()
+    {
         global $db;
-    
+
+        $company = $_SESSION['wa_current_user']->company;
         $store = new MySQLStore($company);
         $store->setConnection($db);
+
+        return $store;
+    }
+
+    function deactivate_extension($company, $check_only = true) {
+        $store = $this->get_datastore();
         if (!$check_only)
         {
             try {
@@ -72,11 +77,7 @@ class hooks_password extends hooks
 
     function authenticate($username, $password)
     {
-        global $db;
-
-        $company = $_SESSION['wa_current_user']->company;
-        $store = new MySQLStore($company);
-        $store->setConnection($db);
+        $store = $this->get_datastore();
         $auth = new Authenticator($store);
         if (is_array($password)) {
             $curr_password = $password[0];
@@ -112,13 +113,13 @@ class hooks_password extends hooks
         );
     }
 
-    function reset_password($username, $new_password)
+    function reset_password($username, $temp_password)
     {
-        $curr_password = null;
-        $is_temporary = true;
-        return $this->authenticate(
-            $username,
-            [$curr_password, $new_password, $is_temporary]
-        );
+        $store = $this->get_datastore();
+        $auth = new Authenticator($store);
+        $result = $auth->resetPassword($username, $temp_password);
+        $this->lastLoginAttempt = $result;
+
+        return !$result->has_failed;
     }
 }

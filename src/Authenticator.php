@@ -54,14 +54,7 @@ class Authenticator
                 $is_temporary
             );
         } catch (\Exception $e) {
-            $has_failed = true;
-            $message = (
-                self::UNEXPECTED_ERROR_MSG .
-                " Username: $username." .
-                " Cause: " . $e->getMessage()
-            );
-            error_log($message);
-            return new LoginAttempt($has_failed, $message);
+            return $this->processUnexpectedException($username, $e);
         }
     }
 
@@ -109,28 +102,7 @@ class Authenticator
         }
 
         if ($new_password != null) {
-            if ($this->passwordInHistory($user->oid, $new_password)) {
-                $has_failed = true;
-                $message = self::RECYCLED_PASSWORD_MSG;
-                return new LoginAttempt($has_failed, $message);
-            }
-            if ($this->passwordTooWeak($username, $new_password)) {
-                $has_failed = true;
-                $message = $this->createPasswordTooWeakMessage(
-                    $username,
-                    $new_password
-                );
-                return new LoginAttempt($has_failed, $message);
-            }
-            $user->fa_pw_hash = md5($new_password);
-            $user->pw_hash = password_hash($new_password, PASSWORD_DEFAULT);
-            $user->needs_pw_change = $is_temporary;
-            $user->last_pw_update_time = date_create('now');
-            $this->store->addPasswordToHistory(
-                $user->oid,
-                $user->pw_hash,
-                $user->last_pw_update_time
-            );
+            return $this->processPasswordChange($username, $new_password);
         } else {
             if (
                 $user->needs_pw_change
@@ -147,6 +119,18 @@ class Authenticator
         $this->store->updateUser($user);
         $has_failed = false;
         $message = "Welcome back $username.";
+        return new LoginAttempt($has_failed, $message);
+    }
+
+    private function processUnexpectedException($username, $exception)
+    {
+        $has_failed = true;
+        $message = (
+            self::UNEXPECTED_ERROR_MSG .
+            " Username: $username." .
+            " Cause: " . $exception->getMessage()
+        );
+        error_log($message);
         return new LoginAttempt($has_failed, $message);
     }
 
@@ -232,6 +216,42 @@ class Authenticator
         return $now < $expire_time;
     }
 
+    private function processPasswordChange(
+        $username,
+        $new_password,
+        $is_temporary = false
+    ) {
+        $user = $this->getExtendedUser($username);
+        if ($this->passwordInHistory($user->oid, $new_password)) {
+            $has_failed = true;
+            $message = self::RECYCLED_PASSWORD_MSG;
+            return new LoginAttempt($has_failed, $message);
+        }
+        if ($this->passwordTooWeak($username, $new_password)) {
+            $has_failed = true;
+            $message = $this->createPasswordTooWeakMessage(
+                $username,
+                $new_password
+            );
+            return new LoginAttempt($has_failed, $message);
+        }
+        $user->fa_pw_hash = md5($new_password);
+        $user->pw_hash = password_hash($new_password, PASSWORD_DEFAULT);
+        $user->needs_pw_change = $is_temporary;
+        $user->is_locked = false;
+        $user->ongoing_pw_fail_count = 0;
+        $user->last_pw_update_time = date_create('now');
+        $this->store->updateUser($user);
+        $this->store->addPasswordToHistory(
+            $user->oid,
+            $user->pw_hash,
+            $user->last_pw_update_time
+        );
+        $has_failed = false;
+        $message = "Password successfully changed for $username.";
+        return new LoginAttempt($has_failed, $message);
+    }
+
     private function passwordInHistory($user_oid, $password)
     {
         $limit = $this->config->password_history_count;
@@ -268,5 +288,19 @@ class Authenticator
         $now = date_create('now');
 
         return $now > $expire_time;
+    }
+
+    public function resetPassword($username, $temp_password)
+    {
+        try {
+            $is_temporary = true;
+            return $this->processPasswordChange(
+                $username,
+                $temp_password,
+                $is_temporary
+            );
+        } catch (\Exception $e) {
+            return $this->processUnexpectedException($username, $e);
+        }
     }
 }
