@@ -353,11 +353,9 @@ class AuthenticatorTest extends TestCase
     public function testLoginWithUnmigratedUserWithTempPasswordDoesIt()
     {
         $is_temporary = true;
-        self::$authenticator->login(
+        self::$authenticator->resetPassword(
             'skinner',
-            null,
-            self::GOOD_NEW_PASSWORD,
-            $is_temporary
+            self::GOOD_NEW_PASSWORD
         );
         $loginAttempt = self::$authenticator->login(
             'skinner',

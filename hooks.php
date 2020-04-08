@@ -106,11 +106,16 @@ class hooks_password extends hooks
         $curr_password,
         $new_password
     ) {
-        $is_temporary = false;
-        return $this->authenticate(
+        $store = $this->get_datastore();
+        $auth = new Authenticator($store);
+        $result = $auth->updatePassword(
             $username,
-            [$curr_password, $new_password, $is_temporary]
+            $curr_password,
+            $new_password
         );
+        $this->lastLoginAttempt = $result;
+
+        return !$result->has_failed;
     }
 
     function reset_password($username, $temp_password)

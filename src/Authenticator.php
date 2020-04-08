@@ -7,7 +7,7 @@ use DateInterval;
 class Authenticator
 {
     const UNEXPECTED_ERROR_MSG = (
-        'An unexpected error occurred while processing login attempt.'
+        'An unexpected error occurred while processing your request.'
     );
     const UNKNOWN_USERNAME_MSG = (
         'This account does not exist. Please enter a different username ' .
@@ -43,15 +43,13 @@ class Authenticator
     public function login(
         $username,
         $password,
-        $new_password = null,
-        $is_temporary = false
+        $new_password = null
     ) {
         try {
             return $this->processLogin(
                 $username,
                 $password,
-                $new_password,
-                $is_temporary
+                $new_password
             );
         } catch (\Exception $e) {
             return $this->processUnexpectedException($username, $e);
@@ -61,17 +59,22 @@ class Authenticator
     private function processLogin(
         $username,
         $password,
-        $new_password,
-        $is_temporary
+        $new_password
     ) {
         $user = $this->getExtendedUser($username);
         if ($user == null) {
-            return $this->processNewUserLogin(
-                $username,
-                $password,
-                $new_password,
-                $is_temporary
-            );
+            $user = $this->getBaseUser($username);
+            if ($user == null) {
+                $has_failed = true;
+                $message = self::UNKNOWN_USERNAME_MSG;
+                return new LoginAttempt($has_failed, $message);
+            }
+            if (md5($password) != $user->fa_pw_hash) {
+                $has_failed = true;
+                $message = self::BAD_PASSWORD_MSG;
+                return new LoginAttempt($has_failed, $message);
+            }
+            $user = $this->migrateUser($user, $password);
         }
 
         if (
@@ -83,10 +86,7 @@ class Authenticator
             return new LoginAttempt($has_failed, $message);
         }
 
-        if (
-            !$is_temporary
-            && !password_verify($password, $user->pw_hash)
-        ) {
+        if (!password_verify($password, $user->pw_hash)) {
             $user->ongoing_pw_fail_count++;
             $user->last_pw_fail_time = date_create('now');
             if (
@@ -158,50 +158,21 @@ class Authenticator
         return $this->getUser('getBaseUserByUsername', $username);
     }
 
-    private function processNewUserLogin(
-        $username,
-        $password,
-        $new_password,
-        $is_temporary
-    ) {
-        $user = $this->getBaseUser($username);
-        if ($user == null) {
-            $has_failed = true;
-            $message = self::UNKNOWN_USERNAME_MSG;
-            return new LoginAttempt($has_failed, $message);
-        }
-        if (!$is_temporary && md5($password) != $user->fa_pw_hash) {
-            $has_failed = true;
-            $message = self::BAD_PASSWORD_MSG;
-            return new LoginAttempt($has_failed, $message);
-        }
-        if ($new_password == null) {
-            $has_failed = true;
-            $message = self::PASSWORD_EXPIRED_MSG;
-            return new LoginAttempt($has_failed, $message);
-        }
-        if ($this->passwordTooWeak($username, $new_password)) {
-            $has_failed = true;
-            $message = $this->createPasswordTooWeakMessage(
-                $username,
-                $new_password
-            );
-            return new LoginAttempt($has_failed, $message);
-        }
-
-        $user->fa_pw_hash = md5($new_password);
-        $user->pw_hash = password_hash($new_password, PASSWORD_DEFAULT);
-        $user->needs_pw_change = $is_temporary;
-        $user->last_pw_update_time = date_create('now');
+    private function migrateUser($user, $password)
+    {
+        $is_temporary = true;
+        $user = $this->updateUserFieldsForNewPassword(
+            $user,
+            $password,
+            $is_temporary
+        );
         $this->store->insertUser($user);
         $this->store->addPasswordToHistory(
             $user->oid,
             $user->pw_hash,
             date_create('now')
         );
-        $has_failed = false;
-        $message = "Welcome back $username.";
-        return new LoginAttempt($has_failed, $message);
+        return $user;
     }
     
     private function tooSoonToTryAgain($last_pw_fail_time)
@@ -222,6 +193,15 @@ class Authenticator
         $is_temporary = false
     ) {
         $user = $this->getExtendedUser($username);
+        if ($user == null) {
+            $user = $this->getBaseUser($username);
+            if ($user == null) {
+                $has_failed = true;
+                $message = self::UNKNOWN_USERNAME_MSG;
+                return new LoginAttempt($has_failed, $message);
+            }
+            $user = $this->migrateUser($user, $new_password);
+        }
         if ($this->passwordInHistory($user->oid, $new_password)) {
             $has_failed = true;
             $message = self::RECYCLED_PASSWORD_MSG;
@@ -235,12 +215,11 @@ class Authenticator
             );
             return new LoginAttempt($has_failed, $message);
         }
-        $user->fa_pw_hash = md5($new_password);
-        $user->pw_hash = password_hash($new_password, PASSWORD_DEFAULT);
-        $user->needs_pw_change = $is_temporary;
-        $user->is_locked = false;
-        $user->ongoing_pw_fail_count = 0;
-        $user->last_pw_update_time = date_create('now');
+        $user = $this->updateUserFieldsForNewPassword(
+            $user,
+            $new_password,
+            $is_temporary
+        );
         $this->store->updateUser($user);
         $this->store->addPasswordToHistory(
             $user->oid,
@@ -278,6 +257,20 @@ class Authenticator
         );
     }
 
+    private function updateUserFieldsForNewPassword(
+        $user,
+        $new_password,
+        $is_temporary = false
+    ) {
+        $user->fa_pw_hash = md5($new_password);
+        $user->pw_hash = password_hash($new_password, PASSWORD_DEFAULT);
+        $user->needs_pw_change = $is_temporary;
+        $user->is_locked = false;
+        $user->ongoing_pw_fail_count = 0;
+        $user->last_pw_update_time = date_create('now');
+        return $user;
+    }
+
     private function passwordIsTooOld($last_pw_update_time)
     {
         $life_length = new DateInterval(
@@ -288,6 +281,32 @@ class Authenticator
         $now = date_create('now');
 
         return $now > $expire_time;
+    }
+
+    public function changePassword($username, $curr_password, $new_password)
+    {
+        try {
+            return $this->processUserPasswordChange(
+                $username,
+                $curr_password,
+                $new_password
+            );
+        } catch (\Exception $e) {
+            return $this->processUnexpectedException($username, $e);
+        }
+    }
+
+    private function processUserPasswordChange(
+        $username,
+        $curr_password,
+        $new_password
+    ) {
+        if (!password_verify($password, $user->pw_hash)) {
+            $has_failed = true;
+            $message = self::BAD_PASSWORD_MSG;
+            return new LoginAttempt($has_failed, $message);
+        }
+        return $this->processPasswordChange($username, $new_password);
     }
 
     public function resetPassword($username, $temp_password)
