@@ -10,7 +10,7 @@ define('SS_PASSWORD', 181 << 8);
 class hooks_password extends hooks
 {
     var $module_name = 'password';
-    public $lastLoginAttempt = null;
+    public $lastResult = null;
 
     function install_options($app)
     {
@@ -82,23 +82,18 @@ class hooks_password extends hooks
         if (is_array($password)) {
             $curr_password = $password[0];
             $new_password = $password[1];
-            $is_temporary = (
-                array_key_exists(2, $password) ? $password[2]: false
-            );
         } else {
             $curr_password = $password;
             $new_password = null;
-            $is_temporary = false;
         }
-        $loginAttempt = $auth->login(
+        $result = $auth->login(
             $username,
             $curr_password,
-            $new_password,
-            $is_temporary
+            $new_password
         );
-        $this->lastLoginAttempt = $loginAttempt;
+        $this->lastResult = $result;
 
-        return !$loginAttempt->has_failed;
+        return !$result->has_failed;
     }
 
     function update_password(
@@ -113,7 +108,7 @@ class hooks_password extends hooks
             $curr_password,
             $new_password
         );
-        $this->lastLoginAttempt = $result;
+        $this->lastResult = $result;
 
         return !$result->has_failed;
     }
@@ -123,7 +118,7 @@ class hooks_password extends hooks
         $store = $this->get_datastore();
         $auth = new Authenticator($store);
         $result = $auth->resetPassword($username, $temp_password);
-        $this->lastLoginAttempt = $result;
+        $this->lastResult = $result;
 
         return !$result->has_failed;
     }

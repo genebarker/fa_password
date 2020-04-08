@@ -2,14 +2,14 @@
 
 namespace madman\Password;
 
-class LoginAttempt
+class Result
 {
     public $has_failed;
     public $message;
 
     public function __construct(
         $has_failed = true,
-        $message = 'Login attempt failed.'
+        $message = 'Request failed.'
     ) {
         $this->has_failed = $has_failed;
         $this->message = $message;

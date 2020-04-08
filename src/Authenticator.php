@@ -57,12 +57,12 @@ class Authenticator
             if ($user == null) {
                 $has_failed = true;
                 $message = self::UNKNOWN_USERNAME_MSG;
-                return new LoginAttempt($has_failed, $message);
+                return new Result($has_failed, $message);
             }
             if (md5($password) != $user->fa_pw_hash) {
                 $has_failed = true;
                 $message = self::BAD_PASSWORD_MSG;
-                return new LoginAttempt($has_failed, $message);
+                return new Result($has_failed, $message);
             }
             $user = $this->migrateUser($user, $password);
         }
@@ -73,7 +73,7 @@ class Authenticator
         ) {
             $has_failed = true;
             $message = self::ACCOUNT_LOCKED_MSG;
-            return new LoginAttempt($has_failed, $message);
+            return new Result($has_failed, $message);
         }
 
         if (!password_verify($password, $user->pw_hash)) {
@@ -88,7 +88,7 @@ class Authenticator
             $this->store->updateUser($user);
             $has_failed = true;
             $message = self::BAD_PASSWORD_MSG;
-            return new LoginAttempt($has_failed, $message);
+            return new Result($has_failed, $message);
         }
 
         if ($new_password != null) {
@@ -101,7 +101,7 @@ class Authenticator
         ) {
             $has_failed = true;
             $message = self::PASSWORD_EXPIRED_MSG;
-            return new LoginAttempt($has_failed, $message);
+            return new Result($has_failed, $message);
         }
 
         $user->is_locked = false;
@@ -109,7 +109,7 @@ class Authenticator
         $this->store->updateUser($user);
         $has_failed = false;
         $message = "Welcome back $username.";
-        return new LoginAttempt($has_failed, $message);
+        return new Result($has_failed, $message);
     }
 
     private function processUnexpectedException($username, $exception)
@@ -121,7 +121,7 @@ class Authenticator
             " Cause: " . $exception->getMessage()
         );
         error_log($message);
-        return new LoginAttempt($has_failed, $message);
+        return new Result($has_failed, $message);
     }
 
     private function getExtendedUser($username)
@@ -188,14 +188,14 @@ class Authenticator
             if ($user == null) {
                 $has_failed = true;
                 $message = self::UNKNOWN_USERNAME_MSG;
-                return new LoginAttempt($has_failed, $message);
+                return new Result($has_failed, $message);
             }
             $user = $this->migrateUser($user, $new_password);
         }
         if ($this->passwordInHistory($user->oid, $new_password)) {
             $has_failed = true;
             $message = self::RECYCLED_PASSWORD_MSG;
-            return new LoginAttempt($has_failed, $message);
+            return new Result($has_failed, $message);
         }
         if ($this->passwordTooWeak($username, $new_password)) {
             $has_failed = true;
@@ -203,7 +203,7 @@ class Authenticator
                 $username,
                 $new_password
             );
-            return new LoginAttempt($has_failed, $message);
+            return new Result($has_failed, $message);
         }
         $user = $this->updateUserFieldsForNewPassword(
             $user,
@@ -218,7 +218,7 @@ class Authenticator
         );
         $has_failed = false;
         $message = "Password successfully changed for $username.";
-        return new LoginAttempt($has_failed, $message);
+        return new Result($has_failed, $message);
     }
 
     private function passwordInHistory($user_oid, $password)
@@ -294,7 +294,7 @@ class Authenticator
         if (!password_verify($password, $user->pw_hash)) {
             $has_failed = true;
             $message = self::BAD_PASSWORD_MSG;
-            return new LoginAttempt($has_failed, $message);
+            return new Result($has_failed, $message);
         }
         return $this->processPasswordChange($username, $new_password);
     }

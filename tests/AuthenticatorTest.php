@@ -35,27 +35,27 @@ class AuthenticatorTest extends TestCase
 
     public function testUnknownUserFails()
     {
-        $loginAttempt = self::$authenticator->login(
+        $result = self::$authenticator->login(
             'mrunknown',
             'some_password'
         );
-        $this->assertTrue($loginAttempt->has_failed);
+        $this->assertTrue($result->has_failed);
         $this->assertEquals(
             'This account does not exist. Please enter a different ' .
             'username or contact your system administrator.',
-            $loginAttempt->message
+            $result->message
         );
     }
 
     public function testGoodUserSucceeds()
     {
-        $loginAttempt = self::$authenticator->login('fmulder', 'scully');
-        $this->assertFalse($loginAttempt->has_failed);
+        $result = self::$authenticator->login('fmulder', 'scully');
+        $this->assertFalse($result->has_failed);
     }
 
     public function testGoodUserResetsPasswordFailCount()
     {
-        $loginAttempt = self::$authenticator->login('fmulder', 'scully');
+        $result = self::$authenticator->login('fmulder', 'scully');
         $user = self::$store->getUserByUsername('fmulder');
         $this->assertEquals(0, $user->ongoing_pw_fail_count);
         $this->assertEquals(
@@ -66,16 +66,16 @@ class AuthenticatorTest extends TestCase
 
     public function testGoodUserBadPassFails()
     {
-        $loginAttempt = self::$authenticator->login('fmulder', 'wrong_pw');
-        $this->assertBadPasswordResult($loginAttempt);
+        $result = self::$authenticator->login('fmulder', 'wrong_pw');
+        $this->assertBadPasswordResult($result);
     }
 
-    private function assertBadPasswordResult($loginAttempt)
+    private function assertBadPasswordResult($result)
     {
-        $this->assertEquals(true, $loginAttempt->has_failed);
+        $this->assertEquals(true, $result->has_failed);
         $this->assertEquals(
             'The password for this account is incorrect.',
-            $loginAttempt->message
+            $result->message
         );
     }
 
@@ -83,7 +83,7 @@ class AuthenticatorTest extends TestCase
     {
         $user_before = self::$store->getUserByUsername('fmulder');
         $login_time = date_create('now');
-        $loginAttempt = self::$authenticator->login('fmulder', 'wrong_pw');
+        $result = self::$authenticator->login('fmulder', 'wrong_pw');
         $user_after = self::$store->getUserByUsername('fmulder');
 
         $this->assertEquals(
@@ -113,7 +113,7 @@ class AuthenticatorTest extends TestCase
             - $user->ongoing_pw_fail_count
         );
         for ($i = 1; $i <= $times_to_fail; $i++) {
-            $loginAttempt = self::$authenticator->login(
+            $result = self::$authenticator->login(
                 $username,
                 'the_wrong_password'
             );
@@ -123,12 +123,12 @@ class AuthenticatorTest extends TestCase
     public function testLoginFailsWhenUserLocked()
     {
         $this->triggerLockForUser('fmulder');
-        $loginAttempt = self::$authenticator->login('fmulder', 'scully');
-        $this->assertEquals(true, $loginAttempt->has_failed);
+        $result = self::$authenticator->login('fmulder', 'scully');
+        $this->assertEquals(true, $result->has_failed);
         $this->assertEquals(
             'This account is locked. Please wait a while then try again ' .
             'or contact your system administrator.',
-            $loginAttempt->message
+            $result->message
         );
     }
 
@@ -141,31 +141,31 @@ class AuthenticatorTest extends TestCase
         $user = self::$store->getUserByUsername('fmulder');
         $user->last_pw_fail_time = $fail_time;
         self::$store->updateUser($user);
-        $loginAttempt = self::$authenticator->login('fmulder', 'scully');
+        $result = self::$authenticator->login('fmulder', 'scully');
         $user_after = self::$store->getUserByUsername('fmulder');
         $this->assertEquals(false, $user_after->is_locked);
     }
 
     public function testFailsWhenNeedsPasswordChange()
     {
-        $loginAttempt = self::$authenticator->login('dscully', 'mulder');
-        $this->assertPasswordExpiredResult($loginAttempt);
+        $result = self::$authenticator->login('dscully', 'mulder');
+        $this->assertPasswordExpiredResult($result);
     }
 
-    private function assertPasswordExpiredResult($loginAttempt)
+    private function assertPasswordExpiredResult($result)
     {
-        $this->assertEquals(true, $loginAttempt->has_failed);
+        $this->assertEquals(true, $result->has_failed);
         $this->assertEquals(
             'The password for this account expired. Please provide a new ' .
             'one using the new password option on the login screen.',
-            $loginAttempt->message
+            $result->message
         );
     }
 
     public function testLoginWithNewPasswordReturnsExpected()
     {
-        $loginAttempt = $this->loginWithNewPassword('fmulder', 'scully');
-        $this->assertEquals(false, $loginAttempt->has_failed);
+        $result = $this->loginWithNewPassword('fmulder', 'scully');
+        $this->assertEquals(false, $result->has_failed);
     }
 
     private function loginWithNewPassword(
@@ -225,11 +225,11 @@ class AuthenticatorTest extends TestCase
             'fmulder',
             self::GOOD_NEW_PASSWORD
         );
-        $loginAttempt = self::$authenticator->login(
+        $result = self::$authenticator->login(
             'fmulder',
             self::GOOD_NEW_PASSWORD
         );
-        $this->assertPasswordExpiredResult($loginAttempt);
+        $this->assertPasswordExpiredResult($result);
     }
 
     public function testLoginWithNewPasswordChangesFAPasswordToo()
@@ -245,27 +245,27 @@ class AuthenticatorTest extends TestCase
     public function testLoginWithNewPasswordFailsWhenTooWeak()
     {
         $weak_new_password = 'password';
-        $loginAttempt = self::$authenticator->login(
+        $result = self::$authenticator->login(
             'fmulder',
             'scully',
             $weak_new_password
         );
-        $this->assertNewPasswordTooWeakResult($loginAttempt);
+        $this->assertNewPasswordTooWeakResult($result);
     }
 
-    public function assertNewPasswordTooWeakResult($loginAttempt)
+    public function assertNewPasswordTooWeakResult($result)
     {
-        $this->assertEquals(true, $loginAttempt->has_failed);
+        $this->assertEquals(true, $result->has_failed);
         $this->assertStringStartsWith(
             'New password is too weak.',
-            $loginAttempt->message
+            $result->message
         );
     }
 
     public function testLoginWithNewPasswordFailureReturnsWithHints()
     {
         $weak_new_password = 'password';
-        $loginAttempt = self::$authenticator->login(
+        $result = self::$authenticator->login(
             'fmulder',
             'scully',
             $weak_new_password
@@ -274,37 +274,37 @@ class AuthenticatorTest extends TestCase
         $password_hints = $zxcvbn->getPasswordHints('fmulder', 'password');
         $this->assertEquals(
             'New password is too weak. ' . $password_hints,
-            $loginAttempt->message
+            $result->message
         );
     }
 
     public function testLoginWithUnmigratedUserGetsPasswordExpiredFailure()
     {
-        $loginAttempt = self::$authenticator->login('skinner', 'smoking');
-        $this->assertPasswordExpiredResult($loginAttempt);
+        $result = self::$authenticator->login('skinner', 'smoking');
+        $this->assertPasswordExpiredResult($result);
     }
 
     public function testLoginWithUnmigratedAndBadPassGetsBadPassFailure()
     {
-        $loginAttempt = self::$authenticator->login('skinner', 'wrong!');
-        $this->assertBadPasswordResult($loginAttempt);
+        $result = self::$authenticator->login('skinner', 'wrong!');
+        $this->assertBadPasswordResult($result);
     }
 
     public function testLoginWithUnmigratedUserWithWeakNewPassword()
     {
         $weak_new_password = 'password';
-        $loginAttempt = self::$authenticator->login(
+        $result = self::$authenticator->login(
             'skinner',
             'smoking',
             $weak_new_password
         );
-        $this->assertNewPasswordTooWeakResult($loginAttempt);
+        $this->assertNewPasswordTooWeakResult($result);
     }
 
     public function testGoodLoginWithUnmigratedUserReturnsSuccessful()
     {
-        $loginAttempt = $this->performGoodUnmigratedUserLogin();
-        $this->assertEquals(false, $loginAttempt->has_failed);
+        $result = $this->performGoodUnmigratedUserLogin();
+        $this->assertEquals(false, $result->has_failed);
     }
 
     private function performGoodUnmigratedUserLogin()
@@ -318,7 +318,7 @@ class AuthenticatorTest extends TestCase
 
     public function testLoginWithUnmigratedUserMigratesHim()
     {
-        $loginAttempt = $this->performGoodUnmigratedUserLogin();
+        $result = $this->performGoodUnmigratedUserLogin();
         $user = self::$store->getUserByUsername('skinner');
         $this->assertEquals(
             md5(self::GOOD_NEW_PASSWORD),
@@ -357,11 +357,11 @@ class AuthenticatorTest extends TestCase
             'skinner',
             self::GOOD_NEW_PASSWORD
         );
-        $loginAttempt = self::$authenticator->login(
+        $result = self::$authenticator->login(
             'skinner',
             self::GOOD_NEW_PASSWORD
         );
-        $this->assertPasswordExpiredResult($loginAttempt);
+        $this->assertPasswordExpiredResult($result);
     }
 
     public function testLoginWithOldPasswordForcesUpdate()
@@ -369,8 +369,8 @@ class AuthenticatorTest extends TestCase
         $user = self::$store->getUserByUsername('fmulder');
         $user->last_pw_update_time = $this->getDateForPasswordTooOld();
         self::$store->updateUser($user);
-        $loginAttempt = self::$authenticator->login('fmulder', 'scully');
-        $this->assertPasswordExpiredResult($loginAttempt);
+        $result = self::$authenticator->login('fmulder', 'scully');
+        $this->assertPasswordExpiredResult($result);
     }
 
     public function getDateForPasswordTooOld()
@@ -382,21 +382,21 @@ class AuthenticatorTest extends TestCase
 
     public function testLoginWithNewPasswordFailsWhenMatchesExisting()
     {
-        $loginAttempt = $this->loginWithNewPassword(
+        $result = $this->loginWithNewPassword(
             'fmulder',
             'scully',
             'scully'
         );
-        $this->assertNeedNewPasswordResult($loginAttempt);
+        $this->assertNeedNewPasswordResult($result);
     }
 
-    public function assertNeedNewPasswordResult($loginAttempt)
+    public function assertNeedNewPasswordResult($result)
     {
-        $this->assertEquals(true, $loginAttempt->has_failed);
+        $this->assertEquals(true, $result->has_failed);
         $this->assertEquals(
             'This password matches one of your recently used ones. ' .
             'Please create a new password.',
-            $loginAttempt->message
+            $result->message
         );
     }
 
@@ -413,11 +413,11 @@ class AuthenticatorTest extends TestCase
             );
             $last_password = $new_password;
         }
-        $loginAttempt = $this->loginWithNewPassword(
+        $result = $this->loginWithNewPassword(
             'skinner',
             $last_password,
             self::GOOD_NEW_PASSWORD . "_1"
         );
-        $this->assertEquals(false, $loginAttempt->has_failed);
+        $this->assertEquals(false, $result->has_failed);
     }
 }
