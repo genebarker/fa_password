@@ -40,27 +40,17 @@ class Authenticator
         $this->zxcvbn = new ZxcvbnWrapper();
     }
 
-    public function login(
-        $username,
-        $password,
-        $new_password = null
-    ) {
+    public function login($username, $password, $new_password = null)
+    {
         try {
-            return $this->processLogin(
-                $username,
-                $password,
-                $new_password
-            );
+            return $this->processLogin($username, $password, $new_password);
         } catch (\Exception $e) {
             return $this->processUnexpectedException($username, $e);
         }
     }
 
-    private function processLogin(
-        $username,
-        $password,
-        $new_password
-    ) {
+    private function processLogin($username, $password, $new_password)
+    {
         $user = $this->getExtendedUser($username);
         if ($user == null) {
             $user = $this->getBaseUser($username);
@@ -103,15 +93,15 @@ class Authenticator
 
         if ($new_password != null) {
             return $this->processPasswordChange($username, $new_password);
-        } else {
-            if (
-                $user->needs_pw_change
-                || $this->passwordIsTooOld($user->last_pw_update_time)
-            ) {
-                $has_failed = true;
-                $message = self::PASSWORD_EXPIRED_MSG;
-                return new LoginAttempt($has_failed, $message);
-            }
+        }
+
+        if (
+            $user->needs_pw_change
+            || $this->passwordIsTooOld($user->last_pw_update_time)
+        ) {
+            $has_failed = true;
+            $message = self::PASSWORD_EXPIRED_MSG;
+            return new LoginAttempt($has_failed, $message);
         }
 
         $user->is_locked = false;
