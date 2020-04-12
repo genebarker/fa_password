@@ -46,9 +46,10 @@ security:
     `> cd webroot/modules`  
     `> git clone https://github.com/genebarker/fa_password.git password`
 
-5. Activate the extension:
+5. Install and activate the extension:
 
     - Go to `Setup` -> `Install/Activate Extensions`
+    - Click the install button next to `password`
     - On the Extensions dropdown box, select `Activated for..`
     - Check the Active checkbox next to `password`
     - Press the `Update` button
@@ -57,6 +58,7 @@ security:
 
     - Go to `Setup` -> `Access Setup`
     - Select `System Administrator` role
+    - Check `Password security:`
     - Check `Configure password security`
 
 7. Tune extension setting to your liking:
