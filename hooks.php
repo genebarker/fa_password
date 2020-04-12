@@ -77,8 +77,6 @@ class hooks_password extends hooks
 
     function authenticate($username, $password)
     {
-        $store = $this->get_datastore();
-        $auth = new Authenticator($store);
         if (is_array($password)) {
             $curr_password = $password[0];
             $new_password = $password[1];
@@ -86,28 +84,19 @@ class hooks_password extends hooks
             $curr_password = $password;
             $new_password = null;
         }
-        $result = $auth->login(
-            $username,
-            $curr_password,
-            $new_password
-        );
+        $store = $this->get_datastore();
+        $auth = new Authenticator($store);
+        $result = $auth->login($username, $curr_password, $new_password);
         $this->lastResult = $result;
 
         return !$result->has_failed;
     }
 
-    function update_password(
-        $username,
-        $curr_password,
-        $new_password
-    ) {
+    function change_password($username, $new_password)
+    {
         $store = $this->get_datastore();
         $auth = new Authenticator($store);
-        $result = $auth->updatePassword(
-            $username,
-            $curr_password,
-            $new_password
-        );
+        $result = $auth->changePassword($username, $new_password);
         $this->lastResult = $result;
 
         return !$result->has_failed;

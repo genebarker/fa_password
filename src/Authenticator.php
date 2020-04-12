@@ -273,30 +273,13 @@ class Authenticator
         return $now > $expire_time;
     }
 
-    public function changePassword($username, $curr_password, $new_password)
+    public function changePassword($username, $new_password)
     {
         try {
-            return $this->processUserPasswordChange(
-                $username,
-                $curr_password,
-                $new_password
-            );
+            return $this->processPasswordChange($username, $new_password);
         } catch (\Exception $e) {
             return $this->processUnexpectedException($username, $e);
         }
-    }
-
-    private function processUserPasswordChange(
-        $username,
-        $curr_password,
-        $new_password
-    ) {
-        if (!password_verify($password, $user->pw_hash)) {
-            $has_failed = true;
-            $message = self::BAD_PASSWORD_MSG;
-            return new Result($has_failed, $message);
-        }
-        return $this->processPasswordChange($username, $new_password);
     }
 
     public function resetPassword($username, $temp_password)
