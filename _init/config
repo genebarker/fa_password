@@ -1,9 +1,0 @@
-Package: passwordchecker
-Version: 1.0
-Name: Password Checker
-Description: Adds several features to improve password security. 
-Author: Eugene F. Barker <genebarker@gmail.com>
-Homepage: https://github.com/genebarker
-InstallPath: modules/password
-Type: extension
-Filename: password-1.0
