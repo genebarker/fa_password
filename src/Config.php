@@ -36,7 +36,7 @@ class Config
         ];
         foreach ($attribute as $attr) {
             $value = $this->$attr;
-            if ($value == null || !is_int($value) || $value <= 0) {
+            if (is_null($value) || !is_int($value) || $value < 0) {
                 return false;
             }
         }

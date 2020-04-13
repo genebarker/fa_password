@@ -60,11 +60,11 @@ class ConfigTest extends TestCase
         $this->assertTrue($config->hasValidValues());
     }
 
-    public function testValidateFailsOnBadThresholdCounts()
+    public function testValidateFailsOnBadValues()
     {
         $attribute = $this->getAttributeNames();
         foreach ($attribute as $attr) {
-            $bad_value = [null, '', 'a', 0, -1];
+            $bad_value = [null, '', 'a', -1];
             foreach ($bad_value as $value) {
                 $config = new Config();
                 $config->$attr = $value;
@@ -74,6 +74,19 @@ class ConfigTest extends TestCase
                     "for attribute: $attr\n"
                 );
             }
+        }
+    }
+
+    public function testAttributesCanBeZero()
+    {
+        $attribute = $this->getAttributeNames();
+        foreach ($attribute as $attr) {
+            $config = new Config();
+            $config->$attr = 0;
+            $this->assertTrue(
+                $config->hasValidValues(),
+                "failed to allow zero value for attribute: $attr\n"
+            );
         }
     }
 }
