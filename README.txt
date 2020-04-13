@@ -15,16 +15,17 @@ security:
 *Design Notes:*
 
 - This extension uses the 3rd party components [zxcvbn-php][2] and
-  [polyfill-mbstring][3]. Please see `vendor/README.txt` for details.
+  [polyfill-mbstring][3]. Please see the [README](vendor/README.txt) for
+  details.
 - This extension is designed to work with the 'fixes' branch fork of
   the [FA repository][4]
 - The fork is used so that the extension can provide feedback to users
   regarding login failures and provide a means to keep password history
-  (not possible using the FA's hook_authenticate method alone).
+  (not possible using FA's hook_authenticate method alone).
 - When extension is activated, existing users are required to update their
   password on the next login.
 - When extension is deactivated, users login as before using their most
-  recent password (since new passwords also stored in original location).
+  recent password (since passwords are also stored in original manner).
 
 *Installation Instructions:*
 
@@ -62,7 +63,7 @@ security:
     - Check `Password security:`
     - Check `Configure password security`
 
-7. Tune extension setting to your liking:
+7. Tune extension settings to your liking:
 
     - Go to Setup -> Password Security Setup
     - Adjust settings to your liking
