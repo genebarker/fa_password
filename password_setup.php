@@ -52,20 +52,21 @@ function render_password_setup_form($pw_config)
     ref_row_with_note(
         'maximum_password_age_days',
         $pw_config->maximum_password_age_days,
-        "Requires password change when its age in days exceeds this."
+        "Requires password change when its age in days exceeds this. " .
+        "Set to 0 to disable."
     );
     ref_row_with_note(
         'password_history_count',
         $pw_config->password_history_count,
         "New passwords must be different than those found in a user's " .
-        "password history."
+        "password history. Set to 0 to disable."
     );
     ref_row_with_note(
         'login_fail_threshold_count',
         $pw_config->login_fail_threshold_count,
         "Account locks after consecutive password failures exceed this. " .
         "Keep this less than FA's \$login_max_attempts " .
-        "($login_max_attempts)."
+        "($login_max_attempts). Set to 0 to disable."
     );
     ref_row_with_note(
         'login_fail_lock_minutes',
@@ -93,7 +94,7 @@ if (isset($_POST['set_pwe_config'])) {
     } else {
         display_error(
             'Invalid password security settings. Each setting must be a ' .
-            'positive integer.'
+            'positive integer or 0.'
         );
     }
 }
