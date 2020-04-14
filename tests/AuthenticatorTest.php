@@ -64,6 +64,24 @@ class AuthenticatorTest extends TestCase
         );
     }
 
+    public function testLoginUnexpectedExpectionResult()
+    {
+        $method_name = 'login';
+        $this->assertHandlesUnexpectedException($method_name);
+    }
+
+    public function assertHandlesUnexpectedException($method_name)
+    {
+        $auth = new Authenticator(self::$store);
+        $auth->store = null;
+        $result = $auth->$method_name('nobody', 'some_pw');
+        $this->assertTrue($result->has_failed);
+        $expected = 'An unexpected error occurred while processing your ' .
+                    'request. Username: nobody. Cause: call_user_func() ' .
+                    'expects parameter 1 to be a valid callback,';
+        $this->assertStringStartsWith($expected, $result->message);
+    }
+
     public function testGoodUserBadPassFails()
     {
         $result = self::$authenticator->login('fmulder', 'wrong_pw');
@@ -450,4 +468,17 @@ class AuthenticatorTest extends TestCase
         );
         $this->assertEquals(false, $result->has_failed);
     }
+
+    public function testChangePasswordUnexpectedExceptionResult()
+    {
+        $method_name = 'changePassword';
+        $this->assertHandlesUnexpectedException($method_name);
+    }
+
+    public function testResetPasswordUnexpectedExceptionResult()
+    {
+        $method_name = 'resetPassword';
+        $this->assertHandlesUnexpectedException($method_name);
+    }
+
 }
