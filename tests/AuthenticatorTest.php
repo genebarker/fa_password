@@ -150,6 +150,11 @@ class AuthenticatorTest extends TestCase
     {
         $config = new Config();
         $config->login_fail_threshold_count = 0;
+        $this->assertLockDisabledWith($config);
+    }
+
+    public function assertLockDisabledWith($config)
+    {
         self::$store->updateConfig($config);
         $authenticator = new Authenticator(self::$store);
         $times_to_fail = 50;
