@@ -146,6 +146,22 @@ class AuthenticatorTest extends TestCase
         $this->assertEquals(false, $user_after->is_locked);
     }
 
+    public function testLockDisabledWhenThresholdZero()
+    {
+        $config = new Config();
+        $config->login_fail_threshold_count = 0;
+        self::$store->updateConfig($config);
+        $authenticator = new Authenticator(self::$store);
+        $times_to_fail = 50;
+        for ($i = 1; $i <= $times_to_fail; $i++) {
+            $result = $authenticator->login('fmulder', 'wrong_password');
+        }
+        $this->assertEquals(
+            $result->message,
+            Authenticator::BAD_PASSWORD_MSG
+        );
+    }
+
     public function testFailsWhenNeedsPasswordChange()
     {
         $result = self::$authenticator->login('dscully', 'mulder');

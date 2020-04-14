@@ -79,9 +79,10 @@ class Authenticator
         if (!password_verify($password, $user->pw_hash)) {
             $user->ongoing_pw_fail_count++;
             $user->last_pw_fail_time = date_create('now');
+            $threshold = $this->config->login_fail_threshold_count;
             if (
-                $user->ongoing_pw_fail_count
-                > $this->config->login_fail_threshold_count
+                $threshold > 0
+                && $user->ongoing_pw_fail_count > $threshold
             ) {
                 $user->is_locked = true;
             }
