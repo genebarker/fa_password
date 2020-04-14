@@ -40,6 +40,11 @@ class Config
                 return false;
             }
         }
+
+        if ($this->minimum_password_strength > 4) {
+            return false;
+        }
+
         return true;
     }
 }

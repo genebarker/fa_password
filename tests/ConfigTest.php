@@ -77,6 +77,16 @@ class ConfigTest extends TestCase
         }
     }
 
+    public function testCantExceedMaximumPossibleStrength()
+    {
+        $config = new Config();
+        $config->minimum_password_strength = 5;
+        $this->assertFalse(
+            $config->hasValidValues(),
+            'minimum_password_strength can not be greater than 4' 
+        );
+    }
+
     public function testAttributesCanBeZero()
     {
         $attribute = $this->getAttributeNames();
