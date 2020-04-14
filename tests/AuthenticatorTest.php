@@ -475,10 +475,33 @@ class AuthenticatorTest extends TestCase
         $this->assertHandlesUnexpectedException($method_name);
     }
 
+    public function testChangePasswordChangesIt()
+    {
+        $new_password = self::GOOD_NEW_PASSWORD;
+        self::$authenticator->changePassword('fmulder', $new_password);
+        $user = self::$store->getUserByUsername('fmulder');
+        $this->assertPasswordChanged($user, $new_password);
+    }
+
+    public function assertPasswordChanged($user, $new_password)
+    {
+        $this->assertTrue(
+            password_verify($new_password, $user->pw_hash)
+        );
+    }
+
     public function testResetPasswordUnexpectedExceptionResult()
     {
         $method_name = 'resetPassword';
         $this->assertHandlesUnexpectedException($method_name);
     }
 
+    public function testResetPasswordResetsIt()
+    {
+        $new_password = self::GOOD_NEW_PASSWORD;
+        self::$authenticator->resetPassword('fmulder', $new_password);
+        $user = self::$store->getUserByUsername('fmulder');
+        $this->assertPasswordChanged($user, $new_password);
+        $this->assertTrue($user->needs_pw_change);
+    }
 }
