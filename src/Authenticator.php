@@ -237,10 +237,12 @@ class Authenticator
     private function passwordInHistory($user_oid, $password)
     {
         $limit = $this->config->password_history_count;
-        $history = $this->store->getPasswordHistory($user_oid, $limit);
-        foreach ($history as $pw) {
-            if (password_verify($password, $pw['pw_hash'])) {
-                return true;
+        if ($limit > 0) {
+            $history = $this->store->getPasswordHistory($user_oid, $limit);
+            foreach ($history as $pw) {
+                if (password_verify($password, $pw['pw_hash'])) {
+                    return true;
+                }
             }
         }
         return false;

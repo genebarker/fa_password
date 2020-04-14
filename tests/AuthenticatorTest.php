@@ -487,6 +487,17 @@ class AuthenticatorTest extends TestCase
         $this->assertEquals(false, $result->has_failed);
     }
 
+    public function testHistoryCheckDisabledWhenHistoryCountZero()
+    {
+        $config = new Config();
+        $config->password_history_count = 0;
+        $config->minimum_password_strength = 0;
+        self::$store->updateConfig($config);
+        $authenticator = new Authenticator(self::$store);
+        $result = $authenticator->login('fmulder', 'scully', 'scully');
+        $this->assertFalse($result->has_failed);
+    }
+
     public function testChangePasswordUnexpectedExceptionResult()
     {
         $method_name = 'changePassword';
