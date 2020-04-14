@@ -276,11 +276,13 @@ class Authenticator
 
     private function passwordIsTooOld($last_pw_update_time)
     {
-        $life_length = new DateInterval(
-            'P' . $this->config->maximum_password_age_days . 'D'
-        );
+        $max_days_old = $this->config->maximum_password_age_days;
+        if ($max_days_old == 0) {
+            return false;
+        }
+        $duration_valid = new DateInterval('P' . $max_days_old . 'D');
         $expire_time = clone $last_pw_update_time;
-        date_add($expire_time, $life_length);
+        date_add($expire_time, $duration_valid);
         $now = date_create('now');
 
         return $now > $expire_time;

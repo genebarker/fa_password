@@ -433,6 +433,19 @@ class AuthenticatorTest extends TestCase
         return $today->sub(new DateInterval('P' . $days_old . 'D'));
     }
 
+    public function testAgeCheckDisabledWhenMaxPasswordAgeZero()
+    {
+        $config = new Config();
+        $config->maximum_password_age_days = 0;
+        self::$store->updateConfig($config);
+        $user = self::$store->getUserByUsername('fmulder');
+        $user->last_pw_update_time = $this->getDateForPasswordTooOld();
+        self::$store->updateUser($user);
+        $authenticator = new Authenticator(self::$store);
+        $result = $authenticator->login('fmulder', 'scully');
+        $this->assertFalse($result->has_failed);
+    }
+
     public function testLoginWithNewPasswordFailsWhenMatchesExisting()
     {
         $result = $this->loginWithNewPassword(
