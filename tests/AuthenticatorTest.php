@@ -161,10 +161,19 @@ class AuthenticatorTest extends TestCase
         for ($i = 1; $i <= $times_to_fail; $i++) {
             $result = $authenticator->login('fmulder', 'wrong_password');
         }
+        $user = self::$store->getUserByUsername('fmulder');
+        $this->assertFalse($user->is_locked);
         $this->assertEquals(
             $result->message,
             Authenticator::BAD_PASSWORD_MSG
         );
+    }
+
+    public function testLockDisabledWhenLockMinutesZero()
+    {
+        $config = new Config();
+        $config->login_fail_lock_minutes = 0;
+        $this->assertLockDisabledWith($config);
     }
 
     public function testFailsWhenNeedsPasswordChange()

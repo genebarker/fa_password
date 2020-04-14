@@ -79,11 +79,7 @@ class Authenticator
         if (!password_verify($password, $user->pw_hash)) {
             $user->ongoing_pw_fail_count++;
             $user->last_pw_fail_time = date_create('now');
-            $threshold = $this->config->login_fail_threshold_count;
-            if (
-                $threshold > 0
-                && $user->ongoing_pw_fail_count > $threshold
-            ) {
+            if ($this->lockShouldTrigger($user->ongoing_pw_fail_count)) {
                 $user->is_locked = true;
             }
             $this->store->updateUser($user);
@@ -176,6 +172,22 @@ class Authenticator
         $now = date_create('now');
 
         return $now < $expire_time;
+    }
+
+    private function lockShouldTrigger($fail_count)
+    {
+        if (!$this->lockFeatureIsEnabled()) {
+            return false;
+        }
+        return $fail_count > $this->config->login_fail_threshold_count;
+    }
+
+    private function lockFeatureIsEnabled()
+    {
+        return (
+            $this->config->login_fail_threshold_count > 0
+            && $this->config->login_fail_lock_minutes > 0
+        );
     }
 
     private function processPasswordChange(
