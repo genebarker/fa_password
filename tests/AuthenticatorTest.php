@@ -414,11 +414,16 @@ class AuthenticatorTest extends TestCase
 
     public function testLoginWithOldPasswordForcesUpdate()
     {
-        $user = self::$store->getUserByUsername('fmulder');
-        $user->last_pw_update_time = $this->getDateForPasswordTooOld();
-        self::$store->updateUser($user);
+        $this->makeUsersPasswordTooOld('fmulder');
         $result = self::$authenticator->login('fmulder', 'scully');
         $this->assertPasswordExpiredResult($result);
+    }
+
+    public function makeUsersPasswordTooOld($username)
+    {
+        $user = self::$store->getUserByUsername($username);
+        $user->last_pw_update_time = $this->getDateForPasswordTooOld();
+        self::$store->updateUser($user);
     }
 
     public function getDateForPasswordTooOld()
