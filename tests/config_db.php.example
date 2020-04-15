@@ -1,0 +1,8 @@
+<?php
+
+return [
+    'host' => '127.0.0.1',
+    'username' => 'fmulder',
+    'password' => 'scully',
+    'db_name' => 'fa23test',
+];
